@@ -1,21 +1,111 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>Películas</title>
+    <style>
+    .tabla-con-borde,
+    .tabla-con-borde th,
+    .tabla-con-borde tr,
+    .tabla-con-borde td {
+      border: 1px solid;
+      padding: 4px;
+      border-collapse: collapse;
+    }
+    /* estilo para el título de la tabla */
+    .tabla-con-borde caption {
+      font-weight: bold;
+    }
+
+    /* definir fondo para encabezado y pie de tabla */
+    .tabla-con-borde thead, .tabla-con-borde tfoot {
+      background: #395870;
+      background: linear-gradient(#49708f, #293f50);
+      color: white;
+    }
+    /* resaltar una fila al pasar con el ratón */
+    .tabla-con-borde tbody tr:hover {
+       /* El modificador "important" se usa para forzar la especificidad
+          sobre otras reglas */
+      background-color: lightblue!important;
+    }
+    /* cambiar el color de fondo para filas impares en cuerpo de tabla */
+    .tabla-con-borde tbody tr:nth-child(odd) {
+      background-color: #eee;
+    }
+  </style>
 </head>
 <body>
   <h1>[% saludo %] <small>[% usuario.nombre %]</small></h1>
-  <img src="[% c.uri_for('/static/images/catalyst_logo.png') %]" alt="Logo">
   <hr>
   [% IF peliculas.size > 0 %]
     <h2>Películas disponibles</h2>
-    <ul>
-    [% FOREACH p IN peliculas %]
-      <li><a href="[% c.uri_for('/peliculas/detalle/' _ p.id ) %]">[% p.title %]</a></li>
-    [% END %]
-    </ul>
+    <div>
+      <a href="[% c.req.uri_with({ pagina => paginador.first_page }) | html %]">&laquo;</a>
+      <a href="[% c.req.uri_with({ pagina => paginador.previous_page }) | html %]">&lt;</a>
+      Mostrando registros del [% paginador.first %] al [% paginador.last %] de
+      [% paginador.total_entries %]
+      <a href="[% c.req.uri_with({ pagina => paginador.next_page }) | html %]">&gt;</a>
+      <a href="[% c.req.uri_with({ pagina => paginador.last_page }) | html %]">&raquo;</a>
+    </div>
+    <table class="tabla-con-borde">
+      <colgroup>
+        <col>
+        <col>
+        <col>
+        <col>
+      </colgroup>
+      <thead>
+        <tr>
+          <th scope="col">Título</th>
+          <th scope="col">Descripción</th>
+          <th scope="col">Año</th>
+          <th scope="col">Categorías</th>
+        </tr>
+      </thead>
+      <tbody>
+      [% FOREACH pelicula IN peliculas %]
+        <tr>
+          <td>
+            <a href="[% c.uri_for('/peliculas/detalle/' _ pelicula.id ) %]">
+              [% pelicula.title %]
+            </a>
+          </td>
+          <td>[% pelicula.description %]</td>
+          <td>[% pelicula.release_year %]</td>
+          <td>
+            [% FOREACH cat IN pelicula.film_categories %]
+              [% cat.category.name %]
+              [%- UNLESS loop.last -%]
+                &mdash;
+              [%- END %]
+            [% END %]
+          </td>
+        </tr>
+      [% END %]
+      </tbody>
+    </table>
   [% ELSE %]
-    <em>No hay películas disponibles</em>
+    <em>No se encontraron películas</em>
   [% END %]
+  <hr>
+  <form>
+    <fieldset>
+      <legend>Buscar películas</legend>
+      <label for="titulo">Título</label>
+      <input id="titulo" type="text" name="titulo" value="[% c.req.params.titulo %]">
+      <label for="categoria">Categoría</label>
+      <select id="categoria" name="categoria">
+        <option value="">--Todas--</option>
+        [%- FOREACH cat IN categorias %]
+        <option value="[% cat.category_id %]"
+          [%- ( cat.category_id == c.req.params.categoria ) ? 'selected' : '' %]>
+          [% cat.name %]
+        </option>
+        [%- END %]
+      </select>
+      <button type="submit">Buscar</button>
+    </fieldset>
+  </form>
 </body>
 </html>

@@ -20,6 +20,8 @@ Catalyst Controller.
 
 =head2 index
 
+Listado de películas
+
 =cut
 
 sub index :Path :Args(0) {
@@ -31,10 +33,35 @@ sub index :Path :Args(0) {
     nombre => 'Homero J. Simpson',
     email => 'homerj@example.com',
   };
-  $c->stash->{ peliculas } = [
-    { title => 'Star Wars', id => 1 },
-    { title => 'The Lord of the Rings', id => 2 },
-  ];
+
+  # Obtener lista de categorías para formulario de búsqueda
+  my $categorias = $c->model('DVD::Category')->search( {} );
+  $c->stash->{ categorias } = [ $categorias->all ];
+
+  # Obtener parámetros de paginación, y proporcionar valores predeterminados
+  my $pagina = $c->request->param('pagina');
+  $pagina = 1 if (!$pagina || $pagina !~ /^\d+$/);
+  my $filas = $c->request->param('filas');
+  $filas = 25 if ( $pagina && (!$filas || $filas !~ /^\d+$/) );
+
+  # Obtener parámetros de filtro, si existen
+  my $filtros = {};
+
+  $filtros->{ 'title' } = { 'ILIKE' => '%'.$c->req->param('titulo').'%' }
+    if $c->req->param('titulo');
+
+  $filtros->{ 'film_categories.category_id' } = $c->req->param('categoria')
+    if $c->req->param('categoria');
+
+  # Buscar películas en el modelo y pasar a la vista a través del stash
+  my $resultados = $c->model('DVD::Film')->search( $filtros, {
+    order_by => 'title',
+    page => $pagina,
+    rows => $filas,
+    join => [ 'film_categories' ],
+  });
+  $c->stash->{ peliculas } = [ $resultados->all ];
+  $c->stash->{ paginador } = $resultados->pager;
 }
 
 
