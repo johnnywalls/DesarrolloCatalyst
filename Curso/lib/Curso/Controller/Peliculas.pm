@@ -25,7 +25,16 @@ Catalyst Controller.
 sub index :Path :Args(0) {
   my ( $self, $c ) = @_;
 
-  $c->response->body('Matched Curso::Controller::Peliculas in Peliculas.');
+  # Demostración sencilla de "stash" y su interpretación en plantilla
+  $c->stash( saludo => '¡Bienvenido!' );
+  $c->stash->{ usuario } = {
+    nombre => 'Homero J. Simpson',
+    email => 'homerj@example.com',
+  };
+  $c->stash->{ peliculas } = [
+    { title => 'Star Wars', id => 1 },
+    { title => 'The Lord of the Rings', id => 2 },
+  ];
 }
 
 

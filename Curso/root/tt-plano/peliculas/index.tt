@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Películas</title>
+</head>
+<body>
+  <h1>[% saludo %] <small>[% usuario.nombre %]</small></h1>
+  <img src="[% c.uri_for('/static/images/catalyst_logo.png') %]" alt="Logo">
+  <hr>
+  [% IF peliculas.size > 0 %]
+    <h2>Películas disponibles</h2>
+    <ul>
+    [% FOREACH p IN peliculas %]
+      <li><a href="[% c.uri_for('/peliculas/detalle/' _ p.id ) %]">[% p.title %]</a></li>
+    [% END %]
+    </ul>
+  [% ELSE %]
+    <em>No hay películas disponibles</em>
+  [% END %]
+</body>
+</html>
