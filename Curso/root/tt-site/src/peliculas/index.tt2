@@ -1,0 +1,69 @@
+  [% IF peliculas.size > 0 %]
+    <h2>Películas disponibles</h2>
+    <div>
+      <a href="[% Catalyst.req.uri_with({ pagina => paginador.first_page }) | html %]">&laquo;</a>
+      <a href="[% Catalyst.req.uri_with({ pagina => paginador.previous_page }) | html %]">&lt;</a>
+      Mostrando registros del [% paginador.first %] al [% paginador.last %] de
+      [% paginador.total_entries %]
+      <a href="[% Catalyst.req.uri_with({ pagina => paginador.next_page }) | html %]">&gt;</a>
+      <a href="[% Catalyst.req.uri_with({ pagina => paginador.last_page }) | html %]">&raquo;</a>
+    </div>
+    <table class="tabla-con-borde">
+      <colgroup>
+        <col>
+        <col>
+        <col>
+        <col>
+      </colgroup>
+      <thead>
+        <tr>
+          <th scope="col">Título</th>
+          <th scope="col">Descripción</th>
+          <th scope="col">Año</th>
+          <th scope="col">Categorías</th>
+        </tr>
+      </thead>
+      <tbody>
+      [% FOREACH pelicula IN peliculas %]
+        <tr>
+          <td>
+            <a href="[% Catalyst.uri_for('/peliculas/detalle/' _ pelicula.id ) %]">
+              [% pelicula.title %]
+            </a>
+          </td>
+          <td>[% pelicula.description %]</td>
+          <td>[% pelicula.release_year %]</td>
+          <td>
+            [% FOREACH cat IN pelicula.film_categories %]
+              [% cat.category.name %]
+              [%- UNLESS loop.last -%]
+                &mdash;
+              [%- END %]
+            [% END %]
+          </td>
+        </tr>
+      [% END %]
+      </tbody>
+    </table>
+  [% ELSE %]
+    <em>No se encontraron películas</em>
+  [% END %]
+  <hr>
+  <form>
+    <fieldset>
+      <legend>Buscar películas</legend>
+      <label for="titulo">Título</label>
+      <input id="titulo" type="text" name="titulo" value="[% Catalyst.req.params.titulo %]">
+      <label for="categoria">Categoría</label>
+      <select id="categoria" name="categoria">
+        <option value="">--Todas--</option>
+        [%- FOREACH cat IN categorias %]
+        <option value="[% cat.category_id %]"
+          [%- ( cat.category_id == Catalyst.req.params.categoria ) ? 'selected' : '' %]>
+          [% cat.name %]
+        </option>
+        [%- END %]
+      </select>
+      <button type="submit">Buscar</button>
+    </fieldset>
+  </form>

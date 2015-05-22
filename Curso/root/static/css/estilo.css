@@ -1,0 +1,29 @@
+.tabla-con-borde,
+.tabla-con-borde th,
+.tabla-con-borde tr,
+.tabla-con-borde td {
+  border: 1px solid;
+  padding: 4px;
+  border-collapse: collapse;
+}
+/* estilo para el título de la tabla */
+.tabla-con-borde caption {
+  font-weight: bold;
+}
+
+/* definir fondo para encabezado y pie de tabla */
+.tabla-con-borde thead, .tabla-con-borde tfoot {
+  background: #395870;
+  background: linear-gradient(#49708f, #293f50);
+  color: white;
+}
+/* resaltar una fila al pasar con el ratón */
+.tabla-con-borde tbody tr:hover {
+    /* El modificador "important" se usa para forzar la especificidad
+      sobre otras reglas */
+  background-color: lightblue!important;
+}
+/* cambiar el color de fondo para filas impares en cuerpo de tabla */
+.tabla-con-borde tbody tr:nth-child(odd) {
+  background-color: #eee;
+}

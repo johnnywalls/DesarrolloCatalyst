@@ -1,0 +1,7 @@
+<header>[% PROCESS site/header %]</header>
+
+<section id="content">
+[% content %]
+</section>
+
+<footer>[% PROCESS site/footer %]</footer>
