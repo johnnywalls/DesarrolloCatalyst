@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>[% template.title or site.title %]</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="[% Catalyst.uri_for('/static/css/estilo.css') %]">
+  <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="//oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+[% content %]
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+
+[%- FOR sc = js_ext %]
+<script src="[% Catalyst.uri_for(sc) %]"></script>
+[%- END -%]
+
+[%- IF js_local %]
+<script>[% js_local %]</script>
+[%- END %]
+</body>
+</html>

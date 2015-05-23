@@ -1,0 +1,5 @@
+<!-- BEGIN site/footer -->
+ <footer class="footer">
+    <div class="container text-center">&copy; [% site.copyright %]</div>
+ </footer>
+<!-- END site/footer -->
