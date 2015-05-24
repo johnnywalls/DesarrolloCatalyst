@@ -1,0 +1,141 @@
+<pre>
+[% GET cadena %][%# muestra el valor de la variable %]
+[% cadena %][%# GET es opcional %]
+
+[% SET cadena = 'Hola' %][%# asignación explícita %]
+[% cadena = 'Adiós...' %][%# SET es opcional %]
+
+[% DEFAULT # asignar valores predeterminados
+  cadena = 'Predeterminado'
+  numero = 3.14
+  nombre = 'Pepe Grillo'
+%]
+[% cadena _ ' ' _ nombre _ ' ' _ numero %][%# concatenación %]
+[% "$cadena $nombre $numero" %][%# interpolación %]
+</pre>
+
+<hr>
+<pre>
+Longitud de cadena: [% cadena.length %]
+Mayúsculas: [% cadena.upper %]
+Minúsculas: [% cadena.lower %]
+
+[% SET coincidencias = nombre.match('(\w+) (\w+)') %][%# expresión regular %]
+Nombre: [% coincidencias.1 %], [% coincidencias.0 %]
+
+Repetición: [% cadena.repeat(3) %]
+Reemplazo: [% nombre.replace('\s','-') %]
+[% SET partes = nombre.split('\s') %]
+Partes unidas: [% partes.join('-') %]
+</pre>
+
+<hr>
+<pre>
+Lista: [% lista %][%# no funciona adecuadamente %]
+Lista: [% lista.join('-') %]
+Longitud de lista: [% lista.size %]
+Lista ordenada: [% lista.sort.join('-') %][%# nsort para ordenamiento numérico %]
+Lista original invertida: [% lista.reverse.join('-') %]
+Primer elemento: [% lista.first %]
+Último elemento: [% lista.last %]
+</pre>
+
+<hr>
+<pre>
+hash.nombre: [% hash.nombre %]
+Claves: [% hash.keys.join %]
+Valores: [% hash.values.join %]
+Recorrer hash:
+[% FOREACH par IN hash.pairs %]
+- [% par.key %]: [% par.value %]
+[% END %]
+Recorrer claves ordenadas:
+[% FOREACH clave IN hash.sort %]
+- [% clave %]: [% hash.$clave %]
+[% END %]
+</pre>
+
+<hr>
+
+[%# Condicionales con IF %]
+[% IF cadena.length < 3 %]
+  La cadena "[% cadena %]" es muy corta
+[% ELSIF cadena.length < 9 %]
+  La cadena "[% cadena %]" tiene la longitud apropiada
+[% ELSE %]
+  La cadena "[% cadena %]" es muy larga
+[% END %]
+
+[%# Condicional con UNLESS %]
+[% UNLESS lista.size > 2 %]
+  La lista es muy corta
+[% END %]
+
+[%# Condicional con SWITCH / CASE %]
+[% SWITCH cadena.length %]
+  [% CASE [0,1,2] %]
+    La cadena "[% cadena %]" es muy corta
+  [% CASE [3..8] %]
+    La cadena "[% cadena %]" tiene la longitud apropiada
+  [% CASE # default %]
+    La cadena "[% cadena %]" es muy larga
+[% END %]
+
+<hr>
+
+[%# Ciclo con FOREACH, usando variable predeterminada de control de ciclo %]
+[% FOREACH numero IN [1..10] %]
+  [% IF loop.first %]
+    Primero:
+  [% ELSIF loop.last %]
+    Último:
+  [% END %]
+  [% NEXT IF numero == 5 %] [%# Saltar una iteración %]
+  [% numero %] ([% (loop.count % 2 == 0) ? 'Par' : 'Impar' %])
+[% END %]
+
+[%# Ciclo con FOREACH sin variable de iteración %]
+[% FOREACH hash.pairs %]
+- [% key %]: [% value %] [%# par.key y par.value si usamos FOREACH par IN hash.pairs %]
+[% END %]
+
+[% SET total = 1 %]
+[%# Ciclo con WHILE %]
+[% WHILE total <= 100 %]
+  total: [% total %]
+  [% LAST IF total > 30 %][%# Salir del ciclo %]
+  [% SET total = total * 2 %]
+[% END %]
+
+<hr>
+
+[%# Cambiar estilo de etiquetas para TT %]
+[% TAGS {% %} %]
+{% IF cadena.length > 2 %}
+  La cadena "{% cadena %}" tiene más de dos caracteres
+{% END %}
+
+{% TAGS html %}
+<!-- IF cadena.length > 2 -->
+  La cadena "<!-- cadena -->" tiene más de dos caracteres
+<!-- END -->
+
+<!-- TAGS outline -->
+%% IF cadena.length > 2
+  La cadena "[% cadena %]" tiene más de dos caracteres
+%% END
+
+%% TAGS default
+[% IF cadena.length > 2 %]
+  La cadena "[% cadena %]" tiene más de dos caracteres
+[% END %]
+
+<hr>
+[%# Controlar salto de líneas antes y después de las directivas de TT %]
+<pre>
+Línea 1:
+[%- cadena %]
+Línea 2:
+[%- nombre -%]
+[% cadena #seguimos en línea 2 -%]
+</pre>
