@@ -1,0 +1,4 @@
+<h2 class="page-header">[% titulo %]</h2>
+<p>
+  [% content %]
+</p>

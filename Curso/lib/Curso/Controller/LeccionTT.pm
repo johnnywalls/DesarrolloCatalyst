@@ -39,6 +39,18 @@ sub index :Path :Args(0) {
   ];
 }
 
+=head2 bloques
+
+=cut
+
+sub bloques : Local {
+  my ( $self, $c ) = @_;
+
+  $c->stash->{ peliculas } = [ $c->model('DVD::Film')->search({},
+    { rows => 4, order_by => \'random()' })->all ];
+  $c->stash->{ categorias } = [ $c->model('DVD::Category')->search({})->all ];
+
+}
 
 
 =encoding utf8

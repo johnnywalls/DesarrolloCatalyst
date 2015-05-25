@@ -1,0 +1,9 @@
+<h3>[% titulo %]</h3>
+<nav>
+  <ul class="nav nav-pills">
+    [%- FOREACH cat IN categorias %]
+    <li role="presentation"><a href="#">[% cat.name %]</a></li>
+    [%- END %]
+  </ul>
+</nav>
+[%- SET titulo = 'Modificado' %]
