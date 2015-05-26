@@ -1,0 +1,156 @@
+<h1 class="page-header">Filtros con Template-Toolkit</h1>
+
+<h2 class="page-header">Filtros de caracteres especiales</h2>
+
+<h3>Filtro html:</h3>
+[%- SET codigo = '<p><a href="#">Esto es c&oacute;digo HTML</a></p>' %]
+<code>
+[% codigo | html %]
+</code>
+
+<h3>Filtro xml:</h3>
+[%- SET codigo = '<?xml version="1.0"?>
+<nutrition>
+  <daily-values>
+    <total-fat units="g">65</total-fat>
+    <saturated-fat units="g">20</saturated-fat>
+    <cholesterol units="mg">300</cholesterol>
+    <sodium units="mg">2400</sodium>
+    <carb units="g">300</carb>
+    <fiber units="g">25</fiber>
+    <protein units="g">50</protein>
+  </daily-values>
+</nutrition>'
+%]
+<pre><code>[% codigo | xml %]</code></pre>
+
+<h3>Filtro html_para:</h3>
+[%- FILTER html_para %]
+Esto se convierte en un párrafo...
+
+Y esto en otro...
+
+
+Un tercero (siempre que haya más de dos saltos de línea consecutivos)
+[%- END %]
+
+<h3>Filtro html_break:</h3>
+[%- FILTER html_break %]
+Este filtro transforma dos o más saltos de línea consecutivos en
+<code>[% '<br>' | html %]</code>
+
+Salto de línea automático
+
+Otro salto
+[% END %]
+
+<h3>Filtro collapse:</h3>
+<pre>
+[%- FILTER collapse %]
+Con el filtro "collapse",
+todos los
+
+saltos y            espacios
+
+son compactados
+
+[%- END %]
+</pre>
+
+<h3>Filtros uri / url:</h3>
+
+Podemos usar el filtro "uri" para componentes de una URL (parámetros, típicamente),
+y el filtro "url" para direcciones completas:
+
+<a href="[% Catalyst.url.base %]/peliculas?titulo=[% 'spinal rock' | uri %]">
+Listar películas
+</a>
+|
+<a href="[% Catalyst.uri_for('/peliculas') _ '?titulo=spinal rock' | url %]">
+Listar películas
+</a>
+
+<h2 class="page-header">Filtros de conversión y formato de texto</h2>
+
+<h3>Filtros básicos</h3>
+
+[%- SET texto = 'Esto es un texto de prueba llamado "Prueba"' %]
+
+[%- FILTER html_para %]
+Mayúsculas: [% texto | upper %]
+
+Minúsculas: [% texto | lower %]
+
+Primera mayúscula: [% texto | lower | ucfirst %]
+
+Primera minúscula: [% texto | upper | lcfirst %]
+[%- END %]
+
+Limpiar espacios:
+<pre>[% '  Acá había espacios al inicio y al final      ' | trim %]</pre>
+
+<h3>Filtro indent</h3>
+<pre>
+Mensaje original
+[% FILTER indent('> ') %]
+Respuesta al mensaje:
+Lorem ipsum dolor...
+[%- END %]
+
+[%- FILTER indent(8) %]
+Texto indentado 8 espacios
+Lorem ipsum dolor...
+[%- FILTER indent(8) %]
+Indentación anidada
+Lorem ipsum dolor...
+[%- END %]
+Indentación externa
+Lorem ipsum dolor...
+[%- END %]
+</pre>
+
+<h3>Filtro repeat</h3>
+[% '=' | repeat(20) %]
+[%- FILTER repeat(3) %]
+<p>Texto de prueba</p>
+[%- END %]
+
+<h3>Filtro truncate</h3>
+<p>
+[%- FILTER truncate(20) %]
+Vivamus vulputate cursus sodales. Class aptent taciti sociosqu ad litora torquent per 
+conubia nostra, per inceptos himenaeos. Praesent nec dolor euismod, hendrerit velit 
+auctor, sodales tellus. Aenean a tempus massa, sit amet luctus ipsum.
+[%- END %]
+</p>
+<p>
+[%- FILTER truncate(46, '... [<a href="#">Ver más</a>]') %]
+Vivamus vulputate cursus sodales. Class aptent taciti sociosqu ad litora torquent per 
+conubia nostra, per inceptos himenaeos. Praesent nec dolor euismod, hendrerit velit 
+auctor, sodales tellus. Aenean a tempus massa, sit amet luctus ipsum.
+[%- END %]
+</p>
+
+<h3>Filtro replace</h3>
+<p>[% 'Los espacios son reemplazados con guión bajo' | replace('\s','_') %]</p>
+
+<h3>Filtro remove</h3>
+<p>[% 'Aquí eliminamos los espacios...' FILTER remove('\s') %]</p>
+
+<h3>Filtro con formato personalizado (format), sintaxis de sprintf</h3>
+
+<pre>
+[%- FILTER format('=== %40s ===') -%]
+Este texto será
+filtrado con el formato establecido
+[%- END %]
+</pre>
+
+[%- FILTER formato_cifras = format('%8.2f'); END %]
+[%- FILTER formato_cadenas = format('%-40s'); END %]
+<pre>
+[% 'Nombre' | formato_cadenas %][% 'Aporte' | format('%8s') %]
+[% '=' | repeat(48) %]
+[% 'Pepe Grillo' | formato_cadenas %][% '324.345' | formato_cifras %]
+[% 'Pepe Trueno' | formato_cadenas %][% '455' | formato_cifras %]
+</pre>

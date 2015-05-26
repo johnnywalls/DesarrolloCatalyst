@@ -52,6 +52,14 @@ sub bloques : Local {
 
 }
 
+=head2 filtros
+
+=cut
+
+sub filtros : Local {
+  my ( $self, $c ) = @_;
+
+}
 
 =encoding utf8
 
