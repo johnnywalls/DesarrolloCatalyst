@@ -61,6 +61,20 @@ sub filtros : Local {
 
 }
 
+=head2 componentes
+
+=cut
+
+sub componentes : Local {
+  my ( $self, $c ) = @_;
+
+  $c->stash->{ lista_hashes } = [
+    { titulo => 'Star Wars', id => 1 },
+    { titulo => 'The Lord of the Rings', id => 2 },
+    { titulo => 'The Shining', id => 3 },
+  ];
+}
+
 =encoding utf8
 
 =head1 AUTHOR

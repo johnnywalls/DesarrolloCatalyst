@@ -1,0 +1,100 @@
+<h1 class="page-header">Ejemplos de componentes estándar de Template-Toolkit</h1>
+
+<h2>Componente Dumper</h2>
+[%- USE Dumper %]
+<pre>
+  [% Dumper.dump( lista_hashes ) %]
+</pre>
+
+<h2>Componente Date</h2>
+[% USE date %]
+<p>
+Fecha actual (formato predeterminado): [% date.format %]
+</p>
+<p>
+Fecha específica: [% date.format(1000212390) # epoch %]
+| [% date.format('8:46:30 11/09/2001') # h:m:s d/m/y %]
+| [% date.format('2001-09-11 8:46:30') # y-m-d h:m:s %]
+</p>
+<p>
+Formatos personalizados (sintaxis de strftime):
+</p>
+[%- SET epoch_911 = 1000212390 %]
+[% FILTER html_para %]
+  [% date.format(epoch_911, '%a %d %b %y', 'en_GB') %]
+
+  [% date.format(epoch_911, '%d de %B %Y, %I:%M %p', 'es_ES') %]
+
+  [%- USE fecha_espanol = date(format = '%A %d/%m/%Y %H:%M:%S', locale = 'es_ES') %]
+  [% fecha_espanol.format(epoch_911) %]
+
+  [% fecha_espanol.format(date.now) %]
+[%- END %]
+
+<h2>Componentes Directory, File</h2>
+[%- USE dir = Directory( Catalyst.path_to('root','static'), recurse=1 ) %]
+
+<style>
+#arbol ul li.row:hover {
+  background-color: lightblue !important;
+}
+</style>
+[% BLOCK directorio %]
+<ul style="list-style-type: none;">
+  <li>
+    <span class="glyphicon glyphicon-folder-open" aria-label="Directorio"></span>
+    [% dir.name %]
+  </li>
+  <li>
+    <ul style="list-style-type: none;">
+    [%- FOREACH item = dir.list %]
+      [%- IF item.isdir %]
+        <li>[% INCLUDE directorio dir=item # inclusión recursiva %]</li>
+      [%- ELSE %]
+        <li class="row">
+          <div class="col-sm-6">
+            <span class="glyphicon glyphicon-file" aria-label="Archivo"></span>
+            [% item.name %]
+          </div>
+          <div class="col-sm-6">
+          [% date.format(item.mtime) | format('%30s') | replace('\s','&nbsp;') %]
+          </div>
+        </li>
+      [%- END %]
+    [%- END %]
+    </ul>
+  </li>
+</ul>
+[%- END %]
+
+<div class="well" id="arbol">
+[% PROCESS directorio %]
+</div>
+
+<h2>Componente Format</h2>
+
+Proporciona una funcionalidad similar a la del filtro FORMAT (con sintaxis de printf)
+
+[%- USE format %]
+[%- formato_cifras = format('%8.2f') %]
+[%- formato_cadenas = format('%-40s') %]
+<pre>
+[% formato_cadenas('Nombre') %][% 'Aporte' | format('%8s') # aquí se usa el filtro, no plugin %]
+[% '=' | repeat(48) %]
+[% formato_cadenas('Pepe Grillo') %][% formato_cifras('324.345') %]
+[% formato_cadenas('Pepe Trueno') %][% formato_cifras('455') %]
+</pre>
+
+<h2>Componente Image</h2>
+[%- SET directorio_imagenes = '/static/images' %]
+[%- USE dir = Directory( Catalyst.path_to( 'root', directorio_imagenes ) ) %]
+[%- FOREACH item = dir.files %]
+  [%- USE Image(item.path) %]
+  <p>
+    <img class="img-responsive"
+        src="[% Catalyst.uri_for(directorio_imagenes) %]/[% item.name %]"
+        alt="[% item.name %]">
+    [% item.name %] - [% Image.size.join('x') # tamaño de la imagen en pixeles %] px
+    [% Image.color_type ? '- Tipo de color: ' _ Image.color_type : '' # con Image::Info %]
+  </p>
+[%- END %]
