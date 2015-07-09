@@ -1,0 +1,68 @@
+<div class="jumbotron">
+  <div class="container">
+    <h1>[% film.title %]</h1>
+    <p>[% film.description %]</p>
+    <p>Categoría(s):
+      [%- FOREACH fc IN film.film_categories %]
+        [% fc.category.name %]
+        [%- UNLESS loop.last; ', '; END %]
+      [%- END %]
+    </p>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xs-12 col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">Reparto</div>
+        <div class="panel-body">
+          <ul>
+          [%- FOREACH fa IN film.film_actors %]
+            <li>[% fa.actor.first_name _ ' ' _ fa.actor.last_name %]</li>
+          [%- END %]
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">Información Adicional</div>
+        <div class="panel-body">
+          <dl class="dl-horizontal">
+            <dt>Año</dt>
+            <dd>[% film.release_year %]</dd>
+            <dt>Idioma</dt>
+            <dd>[% film.language.name %]</dd>
+            <dt>Duración</dt>
+            <dd>[% film.length %] minutos</dd>
+            <dt>Clasificación MPAA</dt>
+            <dd>[% film.rating %]</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">Disponible en Tiendas</div>
+        <div class="panel-body">
+          [%- IF tiendas.size %]
+          <ul>
+            [%- FOREACH fila IN tiendas %]
+            <li>
+                [% fila.tienda.address.address %]
+                ([% fila.tienda.address.district %], [% fila.tienda.address.city.city %]):
+                [% fila.total %] ejemplar(es)
+            </li>
+            [%- END %]
+          </ul>
+          [%- ELSE %]
+          <div class="alert alert-warning" role="alert">No hay disponibilidad actualmente</div>
+          [%- END %]
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
