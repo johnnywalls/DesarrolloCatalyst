@@ -263,6 +263,8 @@ sub alquilar :Chained('tienda_base') :Args(0) {
   my ( $self, $c ) = @_;
 
   $c->forward('ver_disponibilidad_tienda');
+
+  # FALTA: validar datos y procesar acción
 }
 
 =encoding utf8
