@@ -1,0 +1,8 @@
+          <dl class="dl-horizontal">
+            <dt>Tienda seleccionada:</dt>
+            <dd>[% tienda.address.address %] ([% tienda.address.district %], [% tienda.address.city.city %])</dd>
+            <dt>Total en existencia:</dt>
+            <dd>[% existencia %] ejemplar(es)</dd>
+            <dt>Disponibles:</dt>
+            <dd>[% disponibles %] ejemplar(es)</dd>
+          </dl>

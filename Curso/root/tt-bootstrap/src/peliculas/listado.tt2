@@ -63,7 +63,7 @@
     [% FOREACH pelicula IN peliculas %]
       <tr>
         <td>
-          <a href="[% Catalyst.uri_for('/peliculas/detalle/' _ pelicula.id ) %]">
+          <a href="[% Catalyst.uri_for('/peliculas/' _ pelicula.id ) %]">
             [% pelicula.title %]
           </a>
         </td>

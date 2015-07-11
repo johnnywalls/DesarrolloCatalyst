@@ -1,15 +1,4 @@
-<div class="jumbotron">
-  <div class="container">
-    <h1>[% film.title %]</h1>
-    <p>[% film.description %]</p>
-    <p>Categoría(s):
-      [%- FOREACH fc IN film.film_categories %]
-        [% fc.category.name %]
-        [%- UNLESS loop.last; ', '; END %]
-      [%- END %]
-    </p>
-  </div>
-</div>
+[% INCLUDE 'peliculas/titulo.tt2' %]
 
 <div class="container-fluid">
   <div class="row">
@@ -40,6 +29,10 @@
             <dt>Clasificación MPAA</dt>
             <dd>[% film.rating %]</dd>
           </dl>
+          <a class="btn btn-info pull-right"
+             href="[% Catalyst.uri_for('/peliculas/'_ film.id _'/reciente') %]">
+             Ver Aquileres recientes
+          </a>
         </div>
       </div>
     </div>
@@ -52,9 +45,8 @@
           <ul>
             [%- FOREACH fila IN tiendas %]
             <li>
-                [% fila.tienda.address.address %]
-                ([% fila.tienda.address.district %], [% fila.tienda.address.city.city %]):
-                [% fila.total %] ejemplar(es)
+                <a href="[% Catalyst.uri_for('/peliculas/' _ film.id _ '/tienda/' _ fila.id ) %]">[% fila.tienda.address.address %]</a>
+                ([% fila.tienda.address.district %], [% fila.tienda.address.city.city %])
             </li>
             [%- END %]
           </ul>

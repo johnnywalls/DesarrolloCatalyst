@@ -1,0 +1,65 @@
+[% INCLUDE 'peliculas/titulo.tt2' %]
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-xs-6 col-xs-offset-3">
+      <div class="panel panel-default">
+        <div class="panel-heading">Disponibilidad en Tienda</div>
+        <div class="panel-body">
+        [%- INCLUDE 'peliculas/disponibilidad_tienda.tt2' %]
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-6 col-xs-offset-3">
+      <div class="panel panel-default">
+        <div class="panel-heading">Datos para Alquiler</div>
+        <div class="panel-body">
+          <form class="form-horizontal" method="post">
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="cantidad">Cantidad</label>
+              <div class="col-sm-9">
+                <input type="number" class="form-control" name="cantidad" id="cantidad" min="1" max="[% disponibles %]">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label">Días:</label>
+              <div class="col-sm-9">
+              <input type="number" class="form-control" name="duracion" id="duracion" min="1" value="[% film.rental_duration %]">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label">Precio:</label>
+              <p class="col-sm-9 form-control-static" id="precio">[% film.rental_rate %]</p>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-3 col-sm-9">
+                <button type="submit" class="btn btn-primary">Confirmar alquiler</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+[%- js_local = BLOCK %]
+
+function calcular_precio() {
+  var precio_referencia = [% film.rental_rate %];
+  var duracion_referencia = [% film.rental_duration %];
+  var cantidad_seleccionada = $('#cantidad').val();
+  var duracion_seleccionada = $('#duracion').val();
+  var precio = Math.round( cantidad_seleccionada * precio_referencia * duracion_seleccionada / duracion_referencia * 100 ) / 100;
+  $('#precio').text( precio );
+}
+
+$('#cantidad').change(function(){
+  calcular_precio();
+}).change();
+
+$('#duracion').change(function(){
+  calcular_precio();
+}).change();
+
+[%- END %]

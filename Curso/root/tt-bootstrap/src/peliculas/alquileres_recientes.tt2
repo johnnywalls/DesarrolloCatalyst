@@ -1,0 +1,41 @@
+[% INCLUDE 'peliculas/titulo.tt2' %]
+
+[%- IF fechas_alquiler.size %]
+<div class="container-fluid">
+  <div class="col-xs-12">
+    <div class="panel panel-info">
+      <div class="panel-heading">Alquileres recientes</div>
+      <div class="panel-body">
+        <div id="timeline" style="min-height:300px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+  google.load("visualization", "1.1", {packages:["timeline"], language:'es'});
+  google.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+    var container = document.getElementById('timeline');
+    var chart = new google.visualization.Timeline(container);
+    var dataTable = new google.visualization.DataTable();
+
+    dataTable.addColumn({ type: 'string', id: 'ID' });
+    dataTable.addColumn({ type: 'date', id: 'Inicio' });
+    dataTable.addColumn({ type: 'date', id: 'Fin' });
+    dataTable.addRows([
+      [%- FOREACH fila IN fechas_alquiler %]
+        [ "#[% fila.id %]", new Date([% fila.inicio.epoch * 1000 %]), new Date( [% fila.fin.epoch * 1000 %] ) ]
+        [%- UNLESS loop.last; ','; END; %]
+      [%- END %]
+    ]);
+    var options = {
+      timeline: { showRowLabels: false, groupByRowLabel: false }
+    };
+    chart.draw(dataTable, options);
+  }
+</script>
+[%- ELSE %]
+<div class="alert alert-info" role="alert">No hay alquileres recientes de esta película</div>
+[%- END %]

@@ -1,0 +1,12 @@
+<div class="jumbotron">
+  <div class="container">
+    <h1><a href="[% Catalyst.uri_for('/peliculas/' _ film.id) %]">[% film.title %]</a></h1>
+    <p>[% film.description %]</p>
+    <p>Categoría(s):
+      [%- FOREACH fc IN film.film_categories %]
+        [% fc.category.name %]
+        [%- UNLESS loop.last; ', '; END %]
+      [%- END %]
+    </p>
+  </div>
+</div>
