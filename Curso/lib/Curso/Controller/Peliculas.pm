@@ -267,6 +267,35 @@ sub alquilar :Chained('tienda_base') :Args(0) {
   # FALTA: validar datos y procesar acción
 }
 
+
+=head2 default
+
+=cut
+
+sub default :Path {
+  my ( $self, $c ) = @_;
+  $c->log->debug("Acción default en controlador Peliculas");
+  $c->response->redirect( $c->uri_for( $c->controller('Peliculas')->action_for('index') ) );
+}
+
+=head2 begin
+
+=cut
+
+sub begin :Private {
+  my ( $self, $c ) = @_;
+  $c->log->debug("Acción begin en controlador Peliculas");
+}
+
+=head2 auto
+
+=cut
+
+sub auto :Private {
+  my ( $self, $c ) = @_;
+  $c->log->debug("Acción auto en controlador Peliculas");
+}
+
 =encoding utf8
 
 =head1 AUTHOR
