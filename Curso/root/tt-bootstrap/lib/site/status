@@ -1,0 +1,17 @@
+[%-
+SET info = Catalyst.flash.status_msg or status_msg;
+SET error = Catalyst.flash.error_msg or error_msg;
+IF info;
+  SET msg_type = 'info';
+  SET msg_text = info;
+END;
+IF error;
+  SET msg_type = 'danger';
+  SET msg_text = error;
+END; %]
+[%- IF msg_text %]
+<div class="alert alert-[% msg_type %] alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+  <p>[% msg_text %]</p>
+</div>
+[%- END %]

@@ -24,11 +24,13 @@ extends 'DBIx::Class::Core';
 
 =item * L<DBIx::Class::InflateColumn::DateTime>
 
+=item * L<DBIx::Class::TimeStamp>
+
 =back
 
 =cut
 
-__PACKAGE__->load_components("InflateColumn::DateTime");
+__PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp");
 __PACKAGE__->table_class("DBIx::Class::ResultSource::View");
 
 =head1 TABLE: C<customer_list>
@@ -55,9 +57,8 @@ __PACKAGE__->table("customer_list");
   is_nullable: 1
   size: 50
 
-=head2 zip code
+=head2 postal_code
 
-  accessor: 'zip_code'
   data_type: 'varchar'
   is_nullable: 1
   size: 10
@@ -99,13 +100,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "address",
   { data_type => "varchar", is_nullable => 1, size => 50 },
-  "zip code",
-  {
-    accessor => "zip_code",
-    data_type => "varchar",
-    is_nullable => 1,
-    size => 10,
-  },
+  "postal_code",
+  { data_type => "varchar", is_nullable => 1, size => 10 },
   "phone",
   { data_type => "varchar", is_nullable => 1, size => 20 },
   "city",
@@ -119,8 +115,8 @@ __PACKAGE__->add_columns(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-05-22 11:11:49
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:343G+IkNaC1AO6aEZX4pmg
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-09-09 19:41:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:IiFt5zZCrK0GITcoGXBGbg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

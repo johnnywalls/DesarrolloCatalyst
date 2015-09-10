@@ -24,11 +24,13 @@ extends 'DBIx::Class::Core';
 
 =item * L<DBIx::Class::InflateColumn::DateTime>
 
+=item * L<DBIx::Class::TimeStamp>
+
 =back
 
 =cut
 
-__PACKAGE__->load_components("InflateColumn::DateTime");
+__PACKAGE__->load_components("InflateColumn::DateTime", "TimeStamp");
 
 =head1 TABLE: C<rental>
 
@@ -80,6 +82,11 @@ __PACKAGE__->table("rental");
   is_nullable: 0
   original: {default_value => \"now()"}
 
+=head2 expected_return_date
+
+  data_type: 'timestamp'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -107,6 +114,8 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
+  "expected_return_date",
+  { data_type => "timestamp", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -205,8 +214,20 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07042 @ 2015-05-22 11:11:49
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KICgQWZku8gz3DxKI9ENIw
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-09-09 19:41:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:RKaIsoE5QwY2JszH7T2caA
+
+__PACKAGE__->add_columns(
+  rental_date => {
+    data_type => 'timestamp',
+    set_on_create => 1,
+  },
+  last_update => {
+    data_type => 'timestamp',
+    set_on_create => 1,
+    set_on_update => 1,
+  }
+);
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

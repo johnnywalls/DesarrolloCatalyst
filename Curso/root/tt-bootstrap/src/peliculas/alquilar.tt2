@@ -1,5 +1,7 @@
 [% INCLUDE 'peliculas/titulo.tt2' %]
 
+<link rel="stylesheet" href="[% Catalyst.uri_for('/static/css/custom-typeahead.css') %]">
+
 <div class="container-fluid">
   <div class="row">
     <div class="col-xs-6 col-xs-offset-3">
@@ -16,9 +18,20 @@
         <div class="panel-body">
           <form class="form-horizontal" method="post">
             <div class="form-group">
-              <label class="col-sm-3 control-label" for="cantidad">Cantidad</label>
+              <label class="col-sm-3 control-label">#Referencia Ejemplares:</label>
               <div class="col-sm-9">
-                <input type="number" class="form-control" name="cantidad" id="cantidad" min="1" max="[% disponibles %]">
+                [%- FOREACH ejemplar IN ejemplares_disponibles %]
+                <label class="checkbox">
+                  <input type="checkbox" name="referencia" value="[% ejemplar.inventory_id %]" [% referencias.grep( '^' _ ejemplar.inventory_id _ '$' ) ? 'checked="checked"' : '' %]>
+                  [% ejemplar.inventory_id %]
+                </label>
+                [%- END %]
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label" for="cantidad">Cantidad seleccionada:</label>
+              <div class="col-sm-9">
+                <p class="col-sm-9 form-control-static" id="cantidad"></p>
               </div>
             </div>
             <div class="form-group">
@@ -32,6 +45,20 @@
               <p class="col-sm-9 form-control-static" id="precio">[% film.rental_rate %]</p>
             </div>
             <div class="form-group">
+              <label class="col-sm-3 control-label">Búsqueda de Cliente:</label>
+              <div class="col-sm-9">
+                <input type="text" class="col-sm-9 form-control" name="busqueda_cliente" id="busqueda_cliente"
+                       placeholder="Introduzca nombre, dirección, teléfono o código postal"
+                       value="[% Catalyst.req.params.busqueda_cliente %]">
+              </div>
+            </div>
+            <div class="form-group">
+              <input type="hidden" name="id_cliente" id="id_cliente" value="[% Catalyst.req.params.id_cliente %]">
+              <input type="hidden" name="texto_cliente" id="texto_cliente" value="[% Catalyst.req.params.texto_cliente %]">
+              <label class="col-sm-3 control-label">Cliente:</label>
+              <div class="col-sm-9 form-control-static" id="cliente"></div>
+            </div>
+            <div class="form-group">
               <div class="col-sm-offset-3 col-sm-9">
                 <button type="submit" class="btn btn-primary">Confirmar alquiler</button>
               </div>
@@ -43,23 +70,75 @@
   </div>
 </div>
 
+[%- js_ext = [
+  '/static/js/typeahead.bundle.min.js'
+] %]
+
 [%- js_local = BLOCK %]
 
 function calcular_precio() {
   var precio_referencia = [% film.rental_rate %];
   var duracion_referencia = [% film.rental_duration %];
-  var cantidad_seleccionada = $('#cantidad').val();
+  var cantidad_seleccionada = $('input:checkbox[name="referencia"]:checked').length;
   var duracion_seleccionada = $('#duracion').val();
   var precio = Math.round( cantidad_seleccionada * precio_referencia * duracion_seleccionada / duracion_referencia * 100 ) / 100;
   $('#precio').text( precio );
+  $('#cantidad').text( cantidad_seleccionada );
 }
 
-$('#cantidad').change(function(){
+$('input:checkbox[name="referencia"]').change(function(){
   calcular_precio();
 }).change();
 
 $('#duracion').change(function(){
   calcular_precio();
 }).change();
+
+function mostrar_cliente (data) {
+  return '<address><strong>'+ data.id + ' - ' + data.name +'</strong><div><span class="glyphicon glyphicon-home"></span> '+
+         data.address + '</div><div><span class="glyphicon glyphicon-screenshot"></span> '+ data.city + ' - ' + data.country + ' - ' +
+         data.postal_code +'<div><span class="glyphicon glyphicon-phone-alt"></span> '+ data.phone +'</div></address>';
+}
+
+var listaClientes = new Bloodhound({
+  datumTokenizer: Bloodhound.tokenizers.whitespace,
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  identify: function(data) { return data.id; },
+  remote: {
+    url: '[% site.url.base %]/peliculas/buscar_cliente/%QUERY',
+    wildcard: '%QUERY'
+  }
+});
+
+$('#busqueda_cliente').typeahead({
+    minLength: 3,
+    highlight: true
+  }, {
+  source: listaClientes,
+  limit: 50,
+  display: function(obj) { return obj.id + ' - ' + obj.name; },
+  templates: {
+    notFound: [
+      '<div class="empty-message">',
+        'No se encontraron clientes con la búsqueda dada',
+      '</div>'
+    ].join('\n'),
+    suggestion: function(data) {
+      return mostrar_cliente(data);
+    }
+  }
+});
+
+$('#busqueda_cliente').bind('typeahead:select', function(ev, suggestion) {
+  var texto = mostrar_cliente(suggestion);
+  $('#id_cliente').val( suggestion.id );
+  $('#cliente').html( texto );
+  $('#texto_cliente').val( btoa(texto) );
+});
+
+// mostrar datos del cliente cuando se recarga el formulario
+if ( $('#texto_cliente').val() ) {
+  $('#cliente').html( atob( $('#texto_cliente').val() ) );
+}
 
 [%- END %]

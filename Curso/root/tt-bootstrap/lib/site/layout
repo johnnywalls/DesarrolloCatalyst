@@ -1,4 +1,5 @@
 [% PROCESS site/header %]
+[% PROCESS site/status %]
 
 [% content %]
 

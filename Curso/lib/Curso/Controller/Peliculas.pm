@@ -4,6 +4,8 @@ use utf8;
 
 use MooseX::MethodAttributes;
 use Types::Standard qw/Int Str StrMatch/;
+use JSON qw/encode_json/;
+use Try::Tiny;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -264,9 +266,85 @@ sub alquilar :Chained('tienda_base') :Args(0) {
 
   $c->forward('ver_disponibilidad_tienda');
 
-  # FALTA: validar datos y procesar acción
+  my $film = $c->stash->{ film };
+  my $tienda = $c->stash->{ tienda };
+
+  my $actualmente_alquiladas = $c->model('DVD::Rental')->search({
+    inventory_id => { '-in' => $film->inventories->search({ store_id => $tienda->id })->get_column('inventory_id')->as_query },
+    return_date => undef,
+  });
+
+  my $ejemplares_disponibles = $c->model('DVD::Inventory')->search({
+    store_id => $tienda->id,
+    film_id => $film->id,
+    inventory_id => { '-not_in' => $actualmente_alquiladas->get_column('inventory_id')->as_query },
+  });
+  $c->stash->{ ejemplares_disponibles } = [ $ejemplares_disponibles->all ];
+
+  # validar datos y procesar acción
+  my $parametros = $c->request->params;
+  my @errores;
+  if ( keys %{$parametros} ) {
+    push(@errores, 'No se seleccionó el cliente') unless $parametros->{ id_cliente };
+    push(@errores, 'No se seleccionaron ejemplares') unless $parametros->{ referencia };
+    push(@errores, 'No se indicó la duración') unless $parametros->{ duracion };
+    if ( @errores ) {
+      $c->stash->{ error_msg } = 'Datos inválidos: ' . join('<br>', @errores);
+    }
+    else {
+      # obtener siempre las referencias seleccionadas como una lista
+      my @referencias;
+      if ( ref $parametros->{ referencia } eq 'ARRAY' ) {
+        @referencias = @{$parametros->{ referencia }};
+      }
+      else {
+        push @referencias, $parametros->{ referencia };
+      }
+      $c->stash->{ referencias } = \@referencias;
+      my $id_empleado = 1; # Por ahora, este valor es fijo. Posteriormente lo tomaremos de la sesión de usuario del sistema
+      # procesar datos
+      try {
+        foreach ( @referencias ) {
+          # insertar en la tabla de alquileres
+          my $alquiler = $c->model('DVD::Rental')->create({
+            inventory_id => $_,
+            customer_id => $parametros->{ id_cliente },
+            staff_id => $id_empleado,
+          });
+          # actualizar la fecha esperada de retorno del alquiler
+          my $retorno = "rental_date + '" .$parametros->{ duracion } . " days'::interval";
+          # se usa una referencia al escalar para indicar que este valor debe ser tomado literalmente en SQL
+          $alquiler->update( { expected_return_date => \$retorno } );
+        }
+        $c->response->redirect( $c->uri_for( '/peliculas/' . $film->id . '/tienda/' . $tienda->id ) );
+      }
+      catch {
+        my $error = $_;
+        $c->stash->{ error_msg } = 'No se pudo procesar la acción: ' . $error;
+      };
+    }
+  }
 }
 
+=head2 buscar_cliente
+
+=cut
+
+sub buscar_cliente : Local : Args(1) {
+  my ( $self, $c, $busqueda ) = @_;
+  my $resultados = $c->model('DVD::CustomerList')->search({
+    'notes' => 'active',
+    '-or' => [
+      name => { 'ILIKE' => '%'.$busqueda.'%' },
+      address => { 'ILIKE' => '%'.$busqueda.'%' },
+      postal_code => { 'ILIKE' => '%'.$busqueda.'%' },
+      phone => { 'ILIKE' => '%'.$busqueda.'%' },
+    ]
+  }, { result_class => 'DBIx::Class::ResultClass::HashRefInflator' });
+  my @datos = $resultados->all;
+  $c->response->content_type("application/json; charset=utf-8");
+  $c->response->body( encode_json( \@datos ) );
+}
 
 =head2 default
 
