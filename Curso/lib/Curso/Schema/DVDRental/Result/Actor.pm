@@ -124,5 +124,17 @@ __PACKAGE__->has_many(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+=head1 CUSTOM METHODS
+
+=head2 full_name
+
+=cut
+
+sub full_name {
+  my $self = shift;
+  return $self->first_name . ' ' . $self->last_name;
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

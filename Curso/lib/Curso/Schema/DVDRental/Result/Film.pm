@@ -258,5 +258,52 @@ __PACKAGE__->belongs_to(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+=head1 CUSTOM METHODS
+
+=head2 categories
+
+Type: many_to_many
+
+Related object: L<Curso::Schema::DVDRental::Result::Category>
+
+=cut
+
+__PACKAGE__->many_to_many( 'categories' => 'film_categories', 'category' );
+
+=head2 categories_names
+
+Returns the names of all categories associated with this film, as single string
+
+=cut
+
+sub categories_names {
+  my $self = shift;
+  return join ', ', $self->categories->get_column('name')->all;
+}
+
+=head2 recent_rentals
+
+Returns the resultset of recent rentals registered for this film.  Accepts optional filter
+and limit parameters
+
+=cut
+
+sub recent_rentals {
+  my $self = shift;
+  my $filters = shift if @_;
+  my $limit = shift if @_;
+
+  $limit = 10 unless defined $limit;
+  $filters->{ 'inventory.film_id' } = $self->id;
+
+  my $schema = $self->result_source->schema;
+  return $schema->resultset('Rental')->search( $filters, {
+    join => [ 'inventory', 'customer' ],
+    rows => $limit,
+    order_by => 'rental_date DESC',
+  });
+}
+
 __PACKAGE__->meta->make_immutable;
 1;

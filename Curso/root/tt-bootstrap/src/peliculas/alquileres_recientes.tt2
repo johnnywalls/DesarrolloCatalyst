@@ -1,4 +1,5 @@
 [% INCLUDE 'peliculas/titulo.tt2' %]
+[%- SET dtformat = '%d/%m/%Y %I:%M %p' %]
 
 [%- IF fechas_alquiler.size %]
 <div class="container-fluid">
@@ -7,6 +8,48 @@
       <div class="panel-heading">Alquileres recientes</div>
       <div class="panel-body">
         <div id="timeline" style="min-height:300px"></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xs-12">
+    <div class="panel panel-info">
+      <div class="panel-heading">Listado de Alquileres más recientes</div>
+      <div class="panel-body">
+        <table class="table">
+          <colgroup>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+            <col>
+          </colgroup>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Tienda</th>
+              <th>Cliente</th>
+              <th>Fecha Alquiler</th>
+              <th>Fecha Esperada de Devolución</th>
+              <th>Devuelta</th>
+              <th>Fecha Devolución</th>
+            </tr>
+          </thead>
+          <tbody>
+          [%- FOREACH alquiler IN alquileres %]
+            <tr>
+              <td>[% alquiler.id %]</td>
+              <td>[% alquiler.inventory.store.name %]</td>
+              <td>[% alquiler.customer.full_name %]</td>
+              <td>[% alquiler.rental_date.strftime( dtformat ) %]</td>
+              <td>[% alquiler.expected_return_date ? alquiler.expected_return_date.strftime( dtformat ) : 'N/D' %]</td>
+              <td>[% alquiler.returned %]</td>
+              <td>[% alquiler.return_date ? alquiler.return_date.strftime( dtformat ) : 'N/D' %]</td>
+            </tr>
+          [%- END %]
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

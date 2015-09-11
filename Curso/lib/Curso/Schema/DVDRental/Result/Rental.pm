@@ -229,6 +229,18 @@ __PACKAGE__->add_columns(
   }
 );
 
+=head1 CUSTOM METHODS
+
+=head2 returned
+
+Returns a string indicating if the given rental has already been returned
+
+=cut
+
+sub returned {
+  my $self = shift;
+  return ( $self->return_date ) ? 'Sí' : 'No';
+}
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;

@@ -1,0 +1,118 @@
+<link rel="stylesheet" type="text/css" href="[% site.url.base %]/static/css/daterangepicker.css" />
+
+<div class="container">
+  <h1 class="page-header">Resumen de Pagos Mensuales</h1>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <form class="form-inline" method="post">
+        <input id="inicio" type="hidden" name="inicio" value="[% Catalyst.req.params.inicio %]">
+        <input id="fin" type="hidden" name="fin" value="[% Catalyst.req.params.fin %]">
+        <fieldset>
+          <legend>Período para Reporte</legend>
+          <div class="form-group">
+            <label for="rango">Rango de Fechas</label>
+            <input id="rango" class="form-control" type="text" name="rango"
+              value="[% Catalyst.req.params.rango %]">
+          </div>
+          <button type="submit" class="btn btn-primary">Consultar</button>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+
+  [%- IF pagos.size > 0 %]
+  <div class="row">
+    <div class="col-xs-12">
+      <div id="barras" style="min-height:300px"></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <table class="table table-bordered table-striped table-hover table-responsive">
+        <colgroup>
+          <col>
+          <col>
+          <col>
+        </colgroup>
+        <thead>
+          <tr>
+            <th scope="col">Año</th>
+            <th scope="col">Mes</th>
+            <th scope="col">Monto Total</th>
+          </tr>
+        </thead>
+        <tbody>
+        [%- FOREACH fila IN pagos %]
+          <tr>
+            <td>[% fila.anio %]</td>
+            <td>[% fila.nombre_mes %]</td>
+            <td>[% fila.total %]</td>
+          </tr>
+        [%- END %]
+        </tbody>
+      </table>
+    </div>
+  </div>
+  [%- ELSE %]
+  <em>No se encontraron pagos para el período dado</em>
+  [%- END %]
+
+</div>
+
+[%- js_ext = [
+  '/static/js/moment.min.js',
+  '/static/js/daterangepicker.js',
+] %]
+
+[%- IF pagos.size > 0 %]
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+  google.load("visualization", "1", {packages:["corechart","bar"], language:'es'});
+  google.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+    var container = document.getElementById('barras');
+    var chart = new google.charts.Bar(container);
+    var data = google.visualization.arrayToDataTable([
+      ['Año - Mes', 'Total Pagos'],
+      [%- FOREACH fila IN pagos %]
+        [ "[% fila.anio %] - [% fila.nombre_mes %]", [% fila.total %] ]
+        [%- UNLESS loop.last; ','; END; %]
+      [%- END %]
+    ]);
+
+    var options = {
+      hAxis: {
+        title: 'Monto',
+        minValue: 0,
+      },
+      vAxis: {
+        title: 'Año y Mes'
+      },
+      bars: 'horizontal'
+    };
+    chart.draw(data, options);
+  }
+</script>
+[%- END %]
+
+[%- js_local = BLOCK %]
+
+$('input[name="rango"]').daterangepicker({
+  locale: {
+    format: 'DD/MM/YYYY',
+    applyLabel: "Aceptar",
+    cancelLabel: "Cancelar",
+    fromLabel: "Desde",
+    toLabel: "Hasta"
+  },
+  showDropdowns: true
+},
+function(start, end, label) {
+  $('#inicio').val( start.format('YYYY-MM-DD') );
+  $('#fin').val( end.format('YYYY-MM-DD') );
+});
+
+[%- END %]

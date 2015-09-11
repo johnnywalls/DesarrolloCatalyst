@@ -1,6 +1,7 @@
 package Curso::Controller::Peliculas;
 use Moose;
 use utf8;
+use v5.10;
 
 use MooseX::MethodAttributes;
 use Types::Standard qw/Int Str StrMatch/;
@@ -65,22 +66,8 @@ sub index :Path :Args(0) {
   my $pagina = $c->stash->{ pagina };
   my $filas = $c->stash->{ filas };
 
-  # Obtener parámetros de filtro, si existen
-  my $filtros = {};
-
-  $filtros->{ 'title' } = { 'ILIKE' => '%'.$c->req->param('titulo').'%' }
-    if $c->req->param('titulo');
-
-  $filtros->{ 'film_categories.category_id' } = $c->req->param('categoria')
-    if $c->req->param('categoria');
-
   # Buscar películas en el modelo y pasar a la vista a través del stash
-  my $resultados = $c->model('DVD::Film')->search( $filtros, {
-    order_by => 'title',
-    page => $pagina,
-    rows => $filas,
-    join => [ 'film_categories' ],
-  });
+  my $resultados = $c->model('DVD::Film')->listar( $c->request->params, $pagina, $filas );
   $c->stash->{ peliculas } = [ $resultados->all ];
   $c->stash->{ paginador } = $resultados->pager;
 }
@@ -191,20 +178,15 @@ sub alquileres_recientes :PathPart('reciente') :Chained('base') :Args(0) {
   my ( $self, $c ) = @_;
 
   my $film = $c->stash->{ film };
-
+  my @alquileres = $film->recent_rentals({},5)->all;
   my @fechas = reverse map +{
       id => $_->rental_id,
       inicio => $_->rental_date,
-      fin => $_->return_date,
+      fin => ($_->return_date // $_->expected_return_date) // $_->rental_date,
     },
-    $c->model('DVD::Rental')->search({
-      'inventory.film_id' => $film->id,
-    },{
-      join => [ 'inventory' ],
-      order_by => 'rental_date DESC',
-      rows => 5,
-    })->all;
+    @alquileres;
   $c->stash->{ fechas_alquiler } = \@fechas;
+  $c->stash->{ alquileres } = \@alquileres;
 }
 
 =head2 tienda_base

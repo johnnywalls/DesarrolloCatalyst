@@ -25,46 +25,34 @@ Catalyst Controller.
 sub index :Path :Args(0) {
   my ( $self, $c ) = @_;
 
-  $c->log->debug('Acción index en controlador Peliculas::Reportes');
+  $c->stash->{ template } = 'message.tt2';
   $c->stash->{ message } = 'Esta es la acción index en Peliculas::Reportes';
 }
 
-=head2 begin
+=head2 inventario_categorias
 
 =cut
 
-sub begin: Private {
+sub inventario_categorias :Local {
   my ( $self, $c ) = @_;
 
-  $c->log->debug('Acción begin en controlador Peliculas::Reportes');
+  $c->stash->{ inventarios } = [ $c->model('DVD::ReporteInventarioCategoria')->search({})->all ];
 }
 
-=head2 auto
+=head2 pagos_mensuales
 
 =cut
 
-sub auto: Private {
+sub pagos_mensuales :Local {
   my ( $self, $c ) = @_;
 
-  $c->log->debug('Acción auto en controlador Peliculas::Reportes');
-}
+  my $inicio = $c->request->params->{ inicio };
+  my $fin = $c->request->params->{ fin };
 
-=head2 end
-
-=cut
-
-sub end: Private {
-  my ( $self, $c ) = @_;
-
-  $c->log->debug('Acción end en controlador Peliculas::Reportes');
-
-  # Para ilustrar, utilizaremos la acción end para que todas las acciones de este
-  # controlador utilicen una Vista diferente (TTSite), con una plantilla específica
-  unless ( $c->response->content_type ) {
-      $c->response->content_type('text/html; charset=utf-8');
+  if ( $inicio && $fin ) {
+    my $pagos = $c->model('DVD::ReportePagosMensuales')->search({}, { bind => [ $inicio, $fin ] });
+    $c->stash->{ pagos } = [ $pagos->all ];
   }
-  $c->stash->{ template } = 'message.tt2';
-  $c->forward('Curso::View::TT::TTSite');
 }
 
 =encoding utf8

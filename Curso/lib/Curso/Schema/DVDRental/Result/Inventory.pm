@@ -138,5 +138,13 @@ __PACKAGE__->has_many(
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
+
+__PACKAGE__->belongs_to(
+  "store",
+  "Curso::Schema::DVDRental::Result::Store",
+  { store_id => "store_id" },
+  { is_deferrable => 0, on_delete => "RESTRICT", on_update => "CASCADE" },
+);
+
 __PACKAGE__->meta->make_immutable;
 1;

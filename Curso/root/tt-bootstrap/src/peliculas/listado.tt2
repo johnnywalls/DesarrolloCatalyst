@@ -69,14 +69,7 @@
         </td>
         <td>[% pelicula.description %]</td>
         <td>[% pelicula.release_year %]</td>
-        <td>
-          [% FOREACH cat IN pelicula.film_categories %]
-            [% cat.category.name %]
-            [%- UNLESS loop.last -%]
-              &mdash;
-            [%- END %]
-          [% END %]
-        </td>
+        <td>[% pelicula.categories_names %]</td>
       </tr>
     [% END %]
     </tbody>
