@@ -33,6 +33,9 @@ sub index :Path :Args(0) {
   my ( $self, $c ) = @_;
 
   $c->log->debug("Acción index en controlador Root");
+  $c->stash->{ template } = 'welcome.tt2';
+  use Data::Dumper;
+  $c->log->debug( "Menú Principal: " . Dumper( $c->config->{ menu_principal } ) );
 }
 
 =head2 default

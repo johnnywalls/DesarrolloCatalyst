@@ -8,24 +8,29 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="[% site.url.base %]">[% template.title or site.title %]</a>
+      <a class="navbar-brand" href="[% site.url.base %]" title="[% Catalyst.config.menu_principal.titulo %]">
+        <img alt="[% Catalyst.config.menu_principal.titulo %]" src="[% Catalyst.uri_for(Catalyst.config.logo) %]">
+      </a>
     </div>
 
     <div class="navbar-collapse collapse" id="barra-principal">
       <ul class="nav navbar-nav">
-        <li><a href="#">Enlace</a></li>
-        <li><a href="#">Enlace</a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-            Menú <span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="#">Acción</a></li>
-            <li><a href="#">Acción 2</a></li>
-            <li class="divider"></li>
-            <li><a href="#">Enlace</a></li>
-          </ul>
-        </li>
+        [%- FOREACH elemento IN Catalyst.config.menu_principal.opcion %]
+          [%- IF elemento.opcion.size > 0  %]
+          <li class="dropdown">
+            <a href="[% Catalyst.uri_for( elemento.link ) or '#' %]" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+            [% elemento.titulo %] <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu" role="menu">
+            [%- FOREACH subelemento IN elemento.opcion %]
+              <li><a href="[% Catalyst.uri_for( subelemento.link ) or '#' %]">[% subelemento.titulo %]</a></li>
+            [%- END %]
+            </ul>
+          </li>
+          [%- ELSE %]
+          <li><a href="[% Catalyst.uri_for( elemento.link ) or '#' %]">[% elemento.titulo %]</a></li>
+          [%- END %]
+        [%- END %]
       </ul>
       <form class="navbar-form navbar-right" role="form">
         <div class="form-group">

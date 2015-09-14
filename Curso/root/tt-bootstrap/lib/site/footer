@@ -1,5 +1,5 @@
 <!-- BEGIN site/footer -->
  <footer class="footer">
-    <div class="container text-center">&copy; [% site.copyright %]</div>
+    <div class="container text-center">&copy; [% Catalyst.config.copyright.join(', ') %]</div>
  </footer>
 <!-- END site/footer -->
