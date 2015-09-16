@@ -36,6 +36,7 @@ sub index :Path :Args(0) {
   $c->stash->{ template } = 'welcome.tt2';
   use Data::Dumper;
   $c->log->debug( "Menú Principal: " . Dumper( $c->config->{ menu_principal } ) );
+  $c->log->debug( "Configuración activa: " . Dumper($c->config) );
 }
 
 =head2 default
@@ -78,6 +79,15 @@ Attempt to render a view, if needed.
 sub end : ActionClass('RenderView') {
   my ( $self, $c ) = @_;
   $c->log->debug("Acción end en controlador Root");
+}
+
+=head2 configuracion
+
+=cut
+
+sub configuracion : Local {
+  my ( $self, $c ) = @_;
+  $c->response->body('Acceso denegado') unless $c->config->{ ver_configuracion };
 }
 
 =head1 AUTHOR
