@@ -166,6 +166,7 @@ sub detalle :PathPart('') :Chained('base') :Args(0) {
       group_by => 'store_id',
     })->all;
   $c->stash->{ tiendas } = \@tiendas;
+  push @{ $c->session->{ peliculas_consultadas } }, $film->title;
 }
 
 =head2 alquileres_recientes
@@ -298,6 +299,7 @@ sub alquilar :Chained('tienda_base') :Args(0) {
           # se usa una referencia al escalar para indicar que este valor debe ser tomado literalmente en SQL
           $alquiler->update( { expected_return_date => \$retorno } );
         }
+        $c->flash->{ status_msg } = 'Alquiler registrado exitosamente';
         $c->response->redirect( $c->uri_for( '/peliculas/' . $film->id . '/tienda/' . $tienda->id ) );
       }
       catch {

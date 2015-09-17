@@ -83,7 +83,10 @@ sub editar : Chained('base') : Args(0) {
     my $datos = { name => $params->{name} };
     try {
       $categoria->update( $datos );
-      $c->response->redirect( $c->uri_for('/admin/categoria/' . $categoria->id ) );
+      $c->response->redirect(
+        $c->uri_for( '/admin/categoria/' . $categoria->id, 
+                     { mid => $c->set_status_msg("Cambios guardados exitosamente") } )
+      );
     }
     catch {
       my $error = $_;
@@ -118,14 +121,25 @@ sub eliminar : Chained('base') : Args(0) {
   if ( $categoria->film_categories->count == 0 ) {
     try {
       $categoria->delete;
-      $c->response->redirect( $c->uri_for('/admin/categoria/' ) );
+      $c->response->redirect(
+        $c->uri_for('/admin/categoria/',
+                    { mid => $c->set_status_msg("Categoría eliminada exitosamente") } )
+      );
     }
     catch {
       my $error = $_;
       my $mensaje = 'No se pudo realizar la acción: ' . $error;
-      $c->log->debug( $mensaje );
-      $c->response->redirect( $c->uri_for('/admin/categoria/' . $categoria->id) );
+      $c->response->redirect(
+        $c->uri_for('/admin/categoria/' . $categoria->id,
+                    { mid => $c->set_error_msg( $mensaje ) } )
+      );
     };
+  }
+  else {
+    $c->response->redirect(
+      $c->uri_for('/admin/categoria/' . $categoria->id,
+                  { mid => $c->set_error_msg( 'No se puede eliminar esta categoría' ) } )
+    );
   }
 }
 
@@ -145,7 +159,10 @@ sub crear : Local : Args(0) {
     my $datos = { name => $params->{name} };
     try {
       $categoria = $c->model('DVD::Category')->create( $datos );
-      $c->response->redirect( $c->uri_for('/admin/categoria/' . $categoria->id ) );
+      $c->response->redirect(
+        $c->uri_for('/admin/categoria/' . $categoria->id,
+                    { mid => $c->set_status_msg("Categoría creada exitosamente") } )
+      );
     }
     catch {
       my $error = $_;

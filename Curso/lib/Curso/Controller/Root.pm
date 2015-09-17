@@ -37,6 +37,8 @@ sub index :Path :Args(0) {
   use Data::Dumper;
   $c->log->debug( "Menú Principal: " . Dumper( $c->config->{ menu_principal } ) );
   $c->log->debug( "Configuración activa: " . Dumper($c->config) );
+  $c->session->{ inicio }++;
+  $c->log->debug( "La página de inicio ha sido visitada " . $c->session->{ inicio } . " veces en esta sesión" );
 }
 
 =head2 default
@@ -79,6 +81,7 @@ Attempt to render a view, if needed.
 sub end : ActionClass('RenderView') {
   my ( $self, $c ) = @_;
   $c->log->debug("Acción end en controlador Root");
+  $c->load_status_msgs;
 }
 
 =head2 configuracion
@@ -88,6 +91,16 @@ sub end : ActionClass('RenderView') {
 sub configuracion : Local {
   my ( $self, $c ) = @_;
   $c->response->body('Acceso denegado') unless $c->config->{ ver_configuracion };
+}
+
+=head2 invalidar_sesion
+
+=cut
+
+sub invalidar_sesion : Local {
+  my ( $self, $c ) = @_;
+  $c->delete_session;
+  $c->response->redirect( $c->uri_for('/') );
 }
 
 =head1 AUTHOR

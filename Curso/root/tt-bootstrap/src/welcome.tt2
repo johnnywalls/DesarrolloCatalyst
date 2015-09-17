@@ -12,6 +12,15 @@ You can use the power of <a href="http://www.template-toolkit.org/">Template Too
  </div>[%# end of jumbotron %]
 
     <div class="container">
+      <h2>Películas consultadas: [% Catalyst.session.peliculas_consultadas.size or 0 %]</h2>
+      [%- IF Catalyst.session.peliculas_consultadas.size %]
+      <ol>
+        [%- FOREACH titulo IN Catalyst.session.peliculas_consultadas %]
+        <li>[% titulo %]</li>
+        [%- END %]
+      </ol>
+      [%- END %]
+
       <!-- Example row of columns -->
       <div class="row">
         <div class="col-md-4">
