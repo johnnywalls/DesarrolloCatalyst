@@ -1,0 +1,31 @@
+<div class="container">
+  <ol class="breadcrumb">
+    <li><a href="[% Catalyst.uri_for('/admin/categoria') %]">Administrar Categorías</a></li>
+    <li class="active">Crear categoría</li>
+  </ol>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2>Crear Categoría</h2>
+    </div>
+    <div class="panel-body">
+      <form>
+        <div class="form-group">
+          <label for="name">Nombre:</label>
+          <input type="text" class="form-control" name="name" id="name" value="[% Catalyst.request.params.name %]">
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">
+            <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+            Guardar
+          </button>
+          <a role="button" class="btn btn-default" href="[% Catalyst.uri_for('/admin/categoria/') %]">
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div> 
+ 

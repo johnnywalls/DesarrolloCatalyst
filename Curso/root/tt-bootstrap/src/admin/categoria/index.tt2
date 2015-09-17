@@ -1,0 +1,51 @@
+<div class="container">
+  <ol class="breadcrumb">
+    <li class="active">Administrar Categorías</li>
+  </ol>
+
+  <a class="btn btn-default" href="[% Catalyst.uri_for('/admin/categoria/crear') %]">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+    Crear categoría
+  </a>
+
+  [% IF categorias.size %]
+  <table class="table table-bordered table-striped table-hover table-responsive">
+    <caption class="h2">Listado de Categorías</caption>
+    <colgroup>
+      <col>
+      <col>
+      <col>
+      <col>
+    </colgroup>
+    <thead>
+      <tr>
+        <th scope="col">Nombre</th>
+        <th scope="col"># Películas</th>
+        <th scope="col">Última Actualización</th>
+        <th scope="col">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+    [% FOREACH fila IN categorias %]
+      <tr>
+        <td>
+          <a href="[% Catalyst.uri_for('/admin/categoria/' _ fila.id ) %]">
+            [% fila.name %]
+          </a>
+        </td>
+        <td>[% fila.film_categories.size %]</td>
+        <td>[% fila.last_update.strftime(Catalyst.config.dtformat) %]</td>
+        <td>
+          <a class="btn btn-primary" href="[% Catalyst.uri_for('/admin/categoria/' _ fila.id _ '/editar' ) %]">
+            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+            Editar
+          </a>
+        </td>
+      </tr>
+    [% END %]
+    </tbody>
+  </table>
+  [% ELSE %]
+    <em>No se encontraron categorías</em>
+  [% END %]
+</div> 

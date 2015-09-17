@@ -93,6 +93,20 @@ __PACKAGE__->add_columns(
 
 __PACKAGE__->set_primary_key("category_id");
 
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<uk_category_name>
+
+=over 4
+
+=item * L</name>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("uk_category_name", ["name"]);
+
 =head1 RELATIONS
 
 =head2 film_categories
@@ -111,8 +125,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-08-04 17:21:56
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Ymyb9jubS974akLouYhegA
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-09-16 19:59:15
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OAyqF5/zjMNWF2JRFxpxow
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
