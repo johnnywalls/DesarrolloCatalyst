@@ -103,6 +103,75 @@ sub invalidar_sesion : Local {
   $c->response->redirect( $c->uri_for('/') );
 }
 
+=head2 login
+
+Acción para inicio de sesión autenticada
+
+=cut
+
+sub login : Local {
+  my ( $self, $c ) = @_;
+  use URI;
+  use URI::QueryParam;
+
+  my $params = $c->request->params;
+  my $usuario = $params->{usuario};
+  my $password = $params->{password};
+
+  # Obtenemos la URI de la página desde donde se invocó a 'login',
+  # para retornar a la misma página luego de la autenticación
+  my $destino = $c->request->referer;
+  $destino = $c->uri_for('/')->as_string unless $destino;
+  $destino = URI->new($destino);
+  # El parámetro 'mid' en la URI es usado por C::P::StatusMessage, y aquí
+  # lo limpiamos para colocar nuestro propio mensaje
+  $destino->query_param_delete('mid');
+
+  if ( $usuario && $usuario ) {
+    if ( $c->authenticate({ username => $usuario, password => $password} ) ) {
+      $c->log->debug( "Usuario autenticado con roles: " . join( ',', $c->user->roles ) );
+      $destino->query_param_append( 'mid', $c->set_status_msg('¡Bienvenido(a), ' . $c->user->id . '!' ) );
+      $c->response->redirect($destino->as_string);
+    }
+    else {
+      $destino->query_param_append( 'mid', $c->set_error_msg('Credenciales inválidas' ) );
+      $c->response->redirect($destino->as_string);
+    }
+  }
+  else {
+    $destino->query_param_append( 'mid', $c->set_error_msg('Parámetros inválidos' ) );
+    $c->response->redirect($destino->as_string);
+  }
+}
+
+=head2 logout
+
+Acción para finalizar sesión de usuario autenticado
+
+=cut
+
+sub logout : Local {
+  my ( $self, $c ) = @_;
+
+  # Obtenemos la URI de la página desde donde se invocó a 'logout',
+  # para retornar a la misma página luego de finalizar la sesión
+  my $destino = $c->request->referer;
+  $destino = $c->uri_for('/')->as_string unless $destino;
+  $destino = URI->new($destino);
+  # El parámetro 'mid' en la URI es usado por C::P::StatusMessage, y aquí
+  # lo limpiamos para colocar nuestro propio mensaje
+  $destino->query_param_delete('mid');
+
+  if ( $c->user_exists ) {
+    $c->logout;
+    $destino->query_param_append( 'mid', $c->set_status_msg('Ha cerrado la sesión' ) );
+    $c->response->redirect($destino->as_string);
+  }
+  else {
+    $c->response->redirect($destino->as_string);
+  }
+}
+
 =head1 AUTHOR
 
 Juan Paredes,,,
