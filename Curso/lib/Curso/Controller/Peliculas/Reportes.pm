@@ -43,7 +43,11 @@ sub inventario_categorias :Local {
 
 =cut
 
-sub pagos_mensuales :Local {
+sub pagos_mensuales :Local
+    :Does(ACL)
+    :AllowedRole(Administrator)
+    :AllowedRole(Sales)
+    :ACLDetachTo('/acceso_denegado') {
   my ( $self, $c ) = @_;
 
   my $inicio = $c->request->params->{ inicio };

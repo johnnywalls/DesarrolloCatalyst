@@ -2,6 +2,8 @@ package Curso::Controller::Root;
 use Moose;
 use namespace::autoclean;
 use utf8;
+use URI;
+use URI::QueryParam;
 
 BEGIN { extends 'Catalyst::Controller' }
 
@@ -70,6 +72,24 @@ sub begin :Private {
 sub auto :Private {
   my ( $self, $c ) = @_;
   $c->log->debug("Acción auto en controlador Root");
+  # Acciones que no requieren un usuario autenticado
+  return 1 if ($c->req->path eq 'login' || $c->req->path eq '' );
+
+  if ( $c->user_exists ) {
+    return 1;
+  }
+  else {
+    # En caso de requerir inicio de sesión, iremos a la página de inicio
+    my $destino = $c->uri_for('/')->as_string;
+    $destino = URI->new($destino);
+    # El parámetro 'mid' en la URI es usado por C::P::StatusMessage, y aquí
+    # lo limpiamos para colocar nuestro propio mensaje
+    $destino->query_param_delete('mid');
+
+    $destino->query_param_append( 'mid', $c->set_error_msg('Por favor, ingrese sus credenciales') );
+    $c->response->redirect($destino->as_string);
+    return 0;
+  }
 }
 
 =head2 end
@@ -93,16 +113,6 @@ sub configuracion : Local {
   $c->response->body('Acceso denegado') unless $c->config->{ ver_configuracion };
 }
 
-=head2 invalidar_sesion
-
-=cut
-
-sub invalidar_sesion : Local {
-  my ( $self, $c ) = @_;
-  $c->delete_session;
-  $c->response->redirect( $c->uri_for('/') );
-}
-
 =head2 login
 
 Acción para inicio de sesión autenticada
@@ -111,17 +121,13 @@ Acción para inicio de sesión autenticada
 
 sub login : Local {
   my ( $self, $c ) = @_;
-  use URI;
-  use URI::QueryParam;
 
   my $params = $c->request->params;
   my $usuario = $params->{usuario};
   my $password = $params->{password};
 
-  # Obtenemos la URI de la página desde donde se invocó a 'login',
-  # para retornar a la misma página luego de la autenticación
-  my $destino = $c->request->referer;
-  $destino = $c->uri_for('/')->as_string unless $destino;
+  # Luego de autenticar, iremos a la página de inicio
+  my $destino = $c->uri_for('/')->as_string;
   $destino = URI->new($destino);
   # El parámetro 'mid' en la URI es usado por C::P::StatusMessage, y aquí
   # lo limpiamos para colocar nuestro propio mensaje
@@ -129,7 +135,7 @@ sub login : Local {
 
   if ( $usuario && $usuario ) {
     if ( $c->authenticate({ username => $usuario, password => $password, active => 1 } ) ) {
-#       $c->log->debug( "Usuario autenticado con roles: " . join( ',', $c->user->roles ) );
+      $c->log->debug( "Usuario autenticado con roles: " . join( ',', $c->user->roles ) );
       $destino->query_param_append( 'mid', $c->set_status_msg('¡Bienvenido(a), ' . $c->user->name . '!' ) );
       $c->response->redirect($destino->as_string);
     }
@@ -152,24 +158,23 @@ Acción para finalizar sesión de usuario autenticado
 
 sub logout : Local {
   my ( $self, $c ) = @_;
+  $c->stash->{ template } = 'welcome.tt2';
+  $c->logout;
+  $c->delete_session;
+  $c->response->redirect( $c->uri_for( '/', { mid => $c->set_status_msg('Ha cerrado la sesión' ) } ) );
+}
 
-  # Obtenemos la URI de la página desde donde se invocó a 'logout',
-  # para retornar a la misma página luego de finalizar la sesión
-  my $destino = $c->request->referer;
-  $destino = $c->uri_for('/')->as_string unless $destino;
-  $destino = URI->new($destino);
-  # El parámetro 'mid' en la URI es usado por C::P::StatusMessage, y aquí
-  # lo limpiamos para colocar nuestro propio mensaje
-  $destino->query_param_delete('mid');
+=head2 acceso_denegado
 
-  if ( $c->user_exists ) {
-    $c->logout;
-    $destino->query_param_append( 'mid', $c->set_status_msg('Ha cerrado la sesión' ) );
-    $c->response->redirect($destino->as_string);
-  }
-  else {
-    $c->response->redirect($destino->as_string);
-  }
+Mostrar mensaje en caso de privilegios insuficientes para alguna acción
+
+=cut
+
+sub acceso_denegado : Private {
+  my ( $self, $c ) = @_;
+  $c->stash->{ error_msg } = 'Privilegios insuficientes';
+  $c->stash->{ template } = 'acceso_denegado.tt2';
+  return 0;
 }
 
 =head1 AUTHOR

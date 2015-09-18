@@ -25,6 +25,7 @@ use Catalyst qw/
     Session::State::Cookie
     StatusMessage
     Authentication
+    Authorization::Roles
 /;
 
 extends 'Catalyst';

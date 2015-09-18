@@ -20,6 +20,20 @@ Catalyst Controller.
 
 =cut
 
+=head2 auto
+
+Verificación de roles
+
+=cut
+
+sub auto :Private {
+  my ( $self, $c ) = @_;
+  unless ( $c->check_user_roles('Administrator') ) {
+    $c->detach('/acceso_denegado');
+    return 0;
+  }
+  return 1;
+}
 
 =head2 index
 

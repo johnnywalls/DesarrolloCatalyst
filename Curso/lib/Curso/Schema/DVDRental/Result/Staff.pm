@@ -202,6 +202,21 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 staff_roles
+
+Type: has_many
+
+Related object: L<Curso::Schema::DVDRental::Result::StaffRole>
+
+=cut
+
+__PACKAGE__->has_many(
+  "staff_roles",
+  "Curso::Schema::DVDRental::Result::StaffRole",
+  { "foreign.staff_id" => "self.staff_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 =head2 store
 
 Type: might_have
@@ -217,9 +232,19 @@ __PACKAGE__->might_have(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+=head2 roles
 
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-08-04 17:21:56
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ocM09vJSMl4s7er6TLUu1w
+Type: many_to_many
+
+Composing rels: L</staff_roles> -> role
+
+=cut
+
+__PACKAGE__->many_to_many("roles", "staff_roles", "role");
+
+
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-09-18 01:41:01
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iNulLv7Fc7RCbgUKSEkomg
 
 sub name {
   my $self = shift;

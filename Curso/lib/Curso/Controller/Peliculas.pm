@@ -247,6 +247,11 @@ Acción para alquilar una película dada en una tienda específica
 sub alquilar :Chained('tienda_base') :Args(0) {
   my ( $self, $c ) = @_;
 
+  # Verificar que sólo usuarios con cualquiera de los siguientes roles puedan ejecutar la acción
+  unless ( $c->check_any_user_role( qw/Administrator Sales Helpdesk/ ) ) {
+    $c->detach('/acceso_denegado');
+  }
+
   $c->forward('ver_disponibilidad_tienda');
 
   my $film = $c->stash->{ film };
