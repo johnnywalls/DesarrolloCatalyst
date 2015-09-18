@@ -128,9 +128,9 @@ sub login : Local {
   $destino->query_param_delete('mid');
 
   if ( $usuario && $usuario ) {
-    if ( $c->authenticate({ username => $usuario, password => $password} ) ) {
-      $c->log->debug( "Usuario autenticado con roles: " . join( ',', $c->user->roles ) );
-      $destino->query_param_append( 'mid', $c->set_status_msg('¡Bienvenido(a), ' . $c->user->id . '!' ) );
+    if ( $c->authenticate({ username => $usuario, password => $password, active => 1 } ) ) {
+#       $c->log->debug( "Usuario autenticado con roles: " . join( ',', $c->user->roles ) );
+      $destino->query_param_append( 'mid', $c->set_status_msg('¡Bienvenido(a), ' . $c->user->name . '!' ) );
       $c->response->redirect($destino->as_string);
     }
     else {
