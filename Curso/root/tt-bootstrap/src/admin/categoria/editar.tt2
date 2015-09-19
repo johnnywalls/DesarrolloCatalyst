@@ -10,22 +10,16 @@
       <h2>Editar Categoría</h2>
     </div>
     <div class="panel-body">
-      <form>
-        <div class="form-group">
-          <label for="name">Nombre:</label>
-          <input type="text" class="form-control" name="name" id="name" value="[% Catalyst.request.params.name or categoria.name %]">
-        </div>
-        <div class="form-group">
-          <button type="submit" class="btn btn-primary">
-            <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
-            Guardar
-          </button>
-          <a role="button" class="btn btn-default" href="[% Catalyst.uri_for('/admin/categoria/' _ categoria.id) %]">
-            Cancelar
-          </a>
-        </div>
-      </form>
+      [% form %]
     </div>
   </div>
 
 </div> 
+
+[%- js_local = BLOCK %]
+
+$('#btn_cancelar').click(function(){
+  window.location = "[% Catalyst.uri_for('/admin/categoria/' _ categoria.id) %]";
+});
+
+[%- END %]
