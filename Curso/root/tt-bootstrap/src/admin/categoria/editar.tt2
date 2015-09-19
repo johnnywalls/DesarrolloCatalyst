@@ -10,6 +10,8 @@
       <h2>Editar Categoría</h2>
     </div>
     <div class="panel-body">
+      [% form %]
+      <!--
       <form>
         <div class="form-group">
           <label for="name">Nombre:</label>
@@ -25,7 +27,16 @@
           </a>
         </div>
       </form>
+      -->
     </div>
   </div>
 
 </div> 
+
+[%- js_local = BLOCK %]
+
+$('#btn_cancelar').click(function(){
+  window.location = "[% Catalyst.uri_for('/admin/categoria/' _ categoria.id) %]";
+});
+
+[%- END %]

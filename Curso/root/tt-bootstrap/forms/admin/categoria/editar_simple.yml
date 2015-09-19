@@ -1,0 +1,21 @@
+---
+languages: [es]
+method: post
+id: frm_categoria
+elements:
+  - type: Text
+    label: Nombre
+    name: name
+    id: name
+    constraints:
+      - type: Required
+      - type: Printable
+  - type: Block
+    elements:
+      - type: Submit
+        name: btn_guardar
+        id: btn_guardar
+      - type: Button
+        name: btn_cancelar
+        id: btn_cancelar
+        value: Cancelar

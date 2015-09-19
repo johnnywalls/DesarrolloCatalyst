@@ -6,7 +6,7 @@ use MooseX::MethodAttributes;
 use Types::Standard qw/Int/;
 use Try::Tiny;
 
-BEGIN { extends 'Catalyst::Controller'; }
+BEGIN { extends 'Catalyst::Controller::HTML::FormFu'; }
 
 =head1 NAME
 
@@ -86,37 +86,63 @@ Editar datos de una categoría dada. URL: /admin/categoria/[id]/editar
 
 =cut
 
-sub editar : Chained('base') : Args(0) {
+sub editar : Chained('base') : Args(0) : FormConfig {
   my ( $self, $c ) = @_;
+
+  my $form = $c->stash->{ form };
+
   # Recuperamos el registro deseado desde el stash
   my $categoria = $c->stash->{ categoria };
 
-  # Si ya tenemos datos enviados, actualizar la categoría
-  my $params = $c->request->params;
-  if ( keys %$params ) {
-    my $datos = { name => $params->{name} };
-    try {
-      $categoria->update( $datos );
-      $c->response->redirect(
-        $c->uri_for( '/admin/categoria/' . $categoria->id, 
-                     { mid => $c->set_status_msg("Cambios guardados exitosamente") } )
-      );
-    }
-    catch {
-      my $error = $_;
-      my $mensaje = 'No se pudo realizar la acción: ';
-      # En caso de falla, identificar motivos conocidos para mostrar un mensaje adecuado
-      if ( $error =~ m/uk_category_name/ ) {
-        $mensaje .= 'El nombre dado para la categoría ya está siendo utilizado.';
-      }
-      else {
-        # Si el motivo de la falla no es conocido de antemano, aquí mostramos el mensaje
-        # completo de error. Esto podría variar según el perfil de usuario o la aplicación
-        $mensaje .= $error;
-      }
-      $c->stash->{ error_msg } = $mensaje;
-    };
+  # llenar datos del formulario
+  $form->default_values( { name => $categoria->name } );
+}
+
+=head2 editar_FORM_VALID
+
+Se invoca cuando se han enviado y validadado exitosamente los datos del formulario
+
+=cut
+
+sub editar_FORM_VALID {
+  my ( $self, $c ) = @_;
+
+  my $form = $c->stash->{ form };
+  my $datos = { name => $form->param_value('name') };
+  my $categoria = $c->stash->{ categoria };
+
+  try {
+    $categoria->update( $datos );
+    $c->response->redirect(
+      $c->uri_for( '/admin/categoria/' . $categoria->id, 
+                    { mid => $c->set_status_msg("Cambios guardados exitosamente") } )
+    );
   }
+  catch {
+    my $error = $_;
+    my $mensaje = 'No se pudo realizar la acción: ';
+    # En caso de falla, identificar motivos conocidos para mostrar un mensaje adecuado
+    if ( $error =~ m/uk_category_name/ ) {
+      $mensaje .= 'El nombre dado para la categoría ya está siendo utilizado.';
+    }
+    else {
+      # Si el motivo de la falla no es conocido de antemano, aquí mostramos el mensaje
+      # completo de error. Esto podría variar según el perfil de usuario o la aplicación
+      $mensaje .= $error;
+    }
+    $c->stash->{ error_msg } = $mensaje;
+  };
+}
+
+=head2 editar_FORM_NOT_VALID
+
+Se invoca cuando se han enviado los datos del formulario pero no han pasado la validación
+
+=cut
+
+sub editar_FORM_NOT_VALID {
+  my ( $self, $c ) = @_;
+  $c->stash->{ error_msg } = 'Existen datos inválidos. Por favor, revise el formulario para corregirlos e intente nuevamente.';
 }
 
 =head2 eliminar
