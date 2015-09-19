@@ -1,0 +1,23 @@
+[%- IF Catalyst.error && Catalyst.error.size > 0 %]
+  [%- SET mensaje = Catalyst.error.0.msg %]
+[%- ELSE %]
+  [%- SET mensaje = '' %]
+[%- END %]
+<div class="jumbotron">
+  <div class="container"><img style="float: right;" src="/static/images/catalyst_logo.png">
+    <h1>Ha ocurrido una falla</h1>
+    <p>
+      Ofrecemos disculpas por los inconvenientes ocasionados, por favor reintente la acción más tarde.
+      Si el problema persiste, contacte al Administrador del Sistema.
+    </p>
+  </div>
+</div>
+
+[%- IF mensaje && Catalyst.config.mostrar_mensaje_tecnico_error %]
+<div class="container">
+  <p>
+    El mensaje técnico de la falla ocurrida es:
+    <pre><code>[% mensaje %]</code></pre>
+  </p>
+</div>
+[%- END %]
