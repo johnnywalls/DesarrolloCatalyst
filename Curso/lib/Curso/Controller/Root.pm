@@ -40,7 +40,11 @@ sub index :Path :Args(0) {
   $c->log->debug( "Menú Principal: " . Dumper( $c->config->{ menu_principal } ) );
   $c->log->debug( "Configuración activa: " . Dumper($c->config) );
   $c->session->{ inicio }++;
-  $c->log->debug( "La página de inicio ha sido visitada " . $c->session->{ inicio } . " veces en esta sesión" );
+  # demostrar diferentes niveles de mensajes para bitácora
+  $c->log->info( "La página de inicio ha sido visitada " . $c->session->{ inicio } . " veces en esta sesión" );
+  $c->log->warn( "Esta es una advertencia" );
+  $c->log->error( "Esto es un mensaje de error" );
+  $c->log->fatal( "Mensaje fatal" );
 }
 
 =head2 default
@@ -72,6 +76,17 @@ sub begin :Private {
 sub auto :Private {
   my ( $self, $c ) = @_;
   $c->log->debug("Acción auto en controlador Root");
+
+  # Agregamos información de IP, URL y usuario a la bitácora
+  Log::Log4perl::MDC->put("ip", $c->request->address);
+  Log::Log4perl::MDC->put("url", $c->request->uri->as_string );
+  if ( $c->user_exists ) {
+    Log::Log4perl::MDC->put("user", $c->user->username);
+  }
+  else {
+    Log::Log4perl::MDC->put("user", 'anonimo');
+  }
+
   # Acciones que no requieren un usuario autenticado
   return 1 if ($c->req->path eq 'login' || $c->req->path eq '' );
 

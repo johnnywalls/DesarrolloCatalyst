@@ -56,6 +56,11 @@ __PACKAGE__->config( 'Plugin::ConfigLoader' => {
 # Start the application
 __PACKAGE__->setup();
 
+# Utilizar logger personalizado con Log4perl
+use Log::Log4perl::Catalyst;
+
+__PACKAGE__->log( Log::Log4perl::Catalyst->new( __PACKAGE__->config->{config_log4perl} ) );
+
 =encoding utf8
 
 =head1 NAME
