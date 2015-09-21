@@ -189,14 +189,14 @@ Crear una nueva categoría. URL: /admin/categoria/crear
 
 =cut
 
-sub crear : Local : Args(0) {
+sub crear : Local : Args(0) : FormConfig('admin/categoria/editar') {
   my ( $self, $c ) = @_;
 
+  my $form = $c->stash->{ form };
   # Si ya tenemos datos enviados, crear el nuevo registro
-  my $params = $c->request->params;
   my $categoria;
-  if ( keys %$params ) {
-    my $datos = { name => $params->{name} };
+  if ( $form->submitted_and_valid ) {
+    my $datos = { name => $form->param_value('name') };
     try {
       $categoria = $c->model('DVD::Category')->create( $datos );
       $c->response->redirect(

@@ -9,6 +9,8 @@
       <h2>Crear Categoría</h2>
     </div>
     <div class="panel-body">
+      [% form %]
+      <!--
       <form>
         <div class="form-group">
           <label for="name">Nombre:</label>
@@ -24,6 +26,7 @@
           </a>
         </div>
       </form>
+      -->
     </div>
   </div>
 
