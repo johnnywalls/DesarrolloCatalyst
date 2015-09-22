@@ -26,6 +26,9 @@ default_args:
     'Fieldset':
       add_attributes:
         class: "well"
+    'Text':
+      constraints:
+        - type: Printable
     'Field':
       layout:
         - label

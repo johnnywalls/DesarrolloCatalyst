@@ -9,7 +9,7 @@ elements:
     elements:
       - type: Block
         attributes:
-          class: "col-xs-6"
+          class: "col-sm-6"
         elements:
           - type: Text
             label: Nombre
@@ -17,18 +17,25 @@ elements:
             id: first_name
             constraints:
               - type: Required
+              - type: MaxLength
+                max: 45
           - type: Text
             label: Apellido
             name: last_name
             id: last_name
             constraints:
               - type: Required
+              - type: MaxLength
+                max: 45
           - type: Email
             label: Email
             name: email
             id: email
             constraints:
               - type: Required
+              - type: Length
+                min: 3
+                max: 50
           - type: Radiogroup
             label: Activo
             name: active
@@ -43,12 +50,32 @@ elements:
             label: Inicio de Contratación
             name: contract_start_date
             id: contract_start_date
+            default_natural: 'today'
             year:
               less: 20
               plus: 1
+            constraints:
+              - type: DateTime
+                parser: 
+                  strptime: '%Y-%m-%d'
+          - type: Text
+            label: Salario base mensual
+            name: monthly_base_salary
+            id: monthly_base_salary
+            comment_xml: '<div class="help-block"><span class="glyphicon glyphicon-info-sign" aria-label="Nota"></span> Obligatorio para usuarios activos</div>'
+            constraints:
+              - type: Required
+                when:
+                  field: active
+                  value: 1
+              - type: Number
+              - type: Range
+                message: "El valor debe estar entre 500 y 2000"
+                min: 500
+                max: 2000
       - type: Block
         attributes:
-          class: "col-xs-6"
+          class: "col-sm-6"
         elements:
           - type: Select
             label: Tienda
@@ -65,19 +92,50 @@ elements:
             id: username
             constraints:
               - type: Required
+              - type: MaxLength
+                max: 16
           - type: Password
             label: Contraseña
             name: password
             id: password
+            comment_xml: '<div class="help-block"><span class="glyphicon glyphicon-info-sign" aria-label="Nota"></span> Obligatorio para usuarios activos</div>'
+            constraints:
+              - type: Required
+                message: "Debe introducir una contraseña si el usuario está activo"
+                when:
+                  field: active
+                  value: 1
+              - type: DependOn
+                others: password_repeat
+                message: "Repita la contraseña suministrada en el campo anterior"
+          - type: Password
+            label: Confirmar Contraseña
+            name: password_repeat
+            id: password_repeat
+            constraints:
+              - type: Equal
+                others: password
+                message: "Las contraseñas deben coincidir"
           - type: File
             label: Foto
             name: picture
             id: picture
+            constraints:
+              - type: "File::MIME"
+                message: "Sólo se permiten imágenes JPEG, PNG o GIF."
+                types:
+                  - "image/jpeg"
+                  - "image/gif"
+                  - "image/png"
+              - type: "File::MaxSize"
+                max: 2097152
+                message: "El tamaño de la imagen no debe superar los 2 Mb."
           - type: Checkboxgroup
             label: Roles
             name: role_id
             id: role_id
             auto_id: "%n_%c"
+            comment_xml: '<div class="help-block"><span class="glyphicon glyphicon-info-sign" aria-label="Nota"></span> Obligatorio para usuarios activos</div>'
             options:
               - [ '1', 'Administrador' ]
               - [ '2', 'Ventas' ]
@@ -85,12 +143,16 @@ elements:
               - [ '4', 'Consulta' ]
             constraints:
               - type: Required
+                message: "Seleccione al menos una opción"
+                when:
+                  field: active
+                  value: 1
   - type: Fieldset
     legend: Datos de Dirección
     elements:
       - type: Block
         attributes:
-          class: "col-xs-6"
+          class: "col-sm-6"
         elements:
           - type: Text
             label: Dirección (Línea 1)
@@ -98,17 +160,22 @@ elements:
             id: address
             constraints:
               - type: Required
+              - type: MaxLength
+                max: 50
           - type: Textarea
             label: Dirección (Línea 2)
             name: address2
             id: address2
             attributes:
               rows: 3
+            constraints:
+              - type: MaxLength
+                max: 50
           - type: ComboBox
             label: Distrito
             empty_first: 1
             empty_first_label: '--Nuevo--'
-            comment_xml: '<span class="glyphicon glyphicon-info-sign" aria-label="Nota"></span> Seleccione en la lista o escriba en el campo de texto'
+            comment_xml: '<div class="help-block"><span class="glyphicon glyphicon-info-sign" aria-label="Nota"></span> Seleccione en la lista o escriba en el campo de texto</div>'
             name: district
             id: district
             values:
@@ -116,9 +183,11 @@ elements:
               - Distrito 2
             constraints:
               - type: Required
+              - type: MaxLength
+                max: 20
       - type: Block
         attributes:
-          class: "col-xs-6"
+          class: "col-sm-6"
         elements:
           - type: Select
             label: Ciudad
@@ -141,6 +210,9 @@ elements:
             id: phone
             constraints:
               - type: Required
+              - type: Regex
+                regex: '^[5-9]\d{8}$'
+                message: "La numeración válida comienza en 5, 6, 7, 8 o 9, y consta de 9 dígitos en total"
   - type: Block
     attributes:
       class: "form-group"

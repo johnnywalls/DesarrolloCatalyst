@@ -111,6 +111,11 @@ __PACKAGE__->table("staff");
   data_type: 'date'
   is_nullable: 1
 
+=head2 monthly_base_salary
+
+  data_type: 'numeric'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -148,6 +153,8 @@ __PACKAGE__->add_columns(
   { data_type => "bytea", is_nullable => 1 },
   "contract_start_date",
   { data_type => "date", is_nullable => 1 },
+  "monthly_base_salary",
+  { data_type => "numeric", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -264,8 +271,8 @@ Composing rels: L</staff_roles> -> role
 __PACKAGE__->many_to_many("roles", "staff_roles", "role");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-09-21 16:45:38
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:bHd2TRk1DcZ7yeGKBnMK0g
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-09-22 13:15:04
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wluH9ale+7uIhHHF0bccnw
 
 sub name {
   my $self = shift;
