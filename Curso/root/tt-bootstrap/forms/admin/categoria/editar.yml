@@ -25,13 +25,13 @@ elements:
         name: btn_guardar
         id: btn_guardar
         content_xml: '<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Guardar'
-        container_tag: none
+        container_tag: span
         attributes:
           class: "btn btn-primary"
       - type: Button
         name: btn_cancelar
         id: btn_cancelar
         value: Cancelar
-        container_tag: none
+        container_tag: span
         attributes:
           class: "btn btn-default"

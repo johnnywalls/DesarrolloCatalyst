@@ -1,0 +1,17 @@
+<div class="container">
+  <ol class="breadcrumb">
+    <li><a href="[% Catalyst.uri_for('/admin/staff') %]">Administrar Empleados</a></li>
+    <li class="active">Registrar empleado</li>
+  </ol>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2>Registro de empleado</h2>
+    </div>
+    <div class="panel-body">
+      [% form %]
+    </div>
+  </div>
+
+</div> 
+ 

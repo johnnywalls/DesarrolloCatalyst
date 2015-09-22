@@ -1,0 +1,158 @@
+---
+load_config_file:
+  - default.yml
+method: post
+id: frm_staff
+elements:
+  - type: Fieldset
+    legend: Datos básicos de Empleado
+    elements:
+      - type: Block
+        attributes:
+          class: "col-xs-6"
+        elements:
+          - type: Text
+            label: Nombre
+            name: first_name
+            id: first_name
+            constraints:
+              - type: Required
+          - type: Text
+            label: Apellido
+            name: last_name
+            id: last_name
+            constraints:
+              - type: Required
+          - type: Email
+            label: Email
+            name: email
+            id: email
+            constraints:
+              - type: Required
+          - type: Radiogroup
+            label: Activo
+            name: active
+            id: active
+            constraints:
+              - type: Required
+            auto_id: "%n_%c"
+            options:
+              - [ '1', 'Sí' ]
+              - [ '0', 'No' ]
+          - type: Date
+            label: Inicio de Contratación
+            name: contract_start_date
+            id: contract_start_date
+            year:
+              less: 20
+              plus: 1
+      - type: Block
+        attributes:
+          class: "col-xs-6"
+        elements:
+          - type: Select
+            label: Tienda
+            name: store_id
+            id: store_id
+            empty_first: 1
+            empty_first_label: '--Seleccione--'
+            options:
+              - [ '1', 'Tienda 1' ]
+              - [ '2', 'Tienda 2' ]
+          - type: Text
+            label: Nombre de usuario
+            name: username
+            id: username
+            constraints:
+              - type: Required
+          - type: Password
+            label: Contraseña
+            name: password
+            id: password
+          - type: File
+            label: Foto
+            name: picture
+            id: picture
+          - type: Checkboxgroup
+            label: Roles
+            name: role_id
+            id: role_id
+            auto_id: "%n_%c"
+            options:
+              - [ '1', 'Administrador' ]
+              - [ '2', 'Ventas' ]
+              - [ '3', 'Soporte' ]
+              - [ '4', 'Consulta' ]
+            constraints:
+              - type: Required
+  - type: Fieldset
+    legend: Datos de Dirección
+    elements:
+      - type: Block
+        attributes:
+          class: "col-xs-6"
+        elements:
+          - type: Text
+            label: Dirección (Línea 1)
+            name: address
+            id: address
+            constraints:
+              - type: Required
+          - type: Textarea
+            label: Dirección (Línea 2)
+            name: address2
+            id: address2
+            attributes:
+              rows: 3
+          - type: ComboBox
+            label: Distrito
+            empty_first: 1
+            empty_first_label: '--Nuevo--'
+            comment_xml: '<span class="glyphicon glyphicon-info-sign" aria-label="Nota"></span> Seleccione en la lista o escriba en el campo de texto'
+            name: district
+            id: district
+            values:
+              - Distrito 1
+              - Distrito 2
+            constraints:
+              - type: Required
+      - type: Block
+        attributes:
+          class: "col-xs-6"
+        elements:
+          - type: Select
+            label: Ciudad
+            name: city_id
+            id: city_id
+            empty_first: 1
+            empty_first_label: '--Seleccione--'
+            options:
+              - [ '1', 'Ciudad 1' ]
+              - [ '2', 'Ciudad 2' ]
+            constraints:
+              - type: Required
+          - type: Text
+            label: Código Postal
+            name: postal_code
+            id: postal_code
+          - type: Text
+            label: Teléfono
+            name: phone
+            id: phone
+            constraints:
+              - type: Required
+  - type: Block
+    attributes:
+      class: "form-group"
+    elements:
+      - type: ContentButton
+        field_type: Submit
+        name: btn_guardar
+        id: btn_guardar
+        attributes:
+          class: "btn btn-primary"
+        content_xml: '<span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Guardar'
+      - type: Button
+        name: btn_cancelar
+        id: btn_cancelar
+        value: Cancelar

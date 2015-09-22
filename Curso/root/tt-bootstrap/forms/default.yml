@@ -1,0 +1,40 @@
+---
+languages: [es]
+auto_container_error_class: "has-error"
+auto_error_class: "text-danger"
+auto_constraint_class: "constraint_%t"
+default_args:
+  elements:
+    'Text|Textarea|Email|URL|Number|Password|File|Select':
+      add_container_attributes:
+        class: "form-group"
+      add_attributes:
+        class: "form-control"
+      add_label_attributes:
+        class: "control-label"
+    'Button|Submit|Reset|ContentButton':
+      container_tag: span
+      add_attributes:
+        class: "btn btn-default"
+    'Submit':
+      add_attributes:
+        class: "btn btn-primary"
+    'Date':
+      strftime: '%Y-%m-%d'
+      add_container_attributes:
+        class: "form-group"
+    'Fieldset':
+      add_attributes:
+        class: "well"
+    'Field':
+      layout:
+        - label
+        - errors
+        - field
+        - comment
+        - javascript
+elements:
+  - type: Block
+    attributes:
+      class: "help-block"
+    content_xml: '<span class="glyphicon glyphicon-info-sign" aria-label="Nota"></span> Los campos marcados con asterisco (*) son obligatorios'

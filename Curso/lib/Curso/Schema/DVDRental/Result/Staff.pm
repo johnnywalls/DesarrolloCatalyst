@@ -106,6 +106,11 @@ __PACKAGE__->table("staff");
   data_type: 'bytea'
   is_nullable: 1
 
+=head2 contract_start_date
+
+  data_type: 'date'
+  is_nullable: 1
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -141,6 +146,8 @@ __PACKAGE__->add_columns(
   },
   "picture",
   { data_type => "bytea", is_nullable => 1 },
+  "contract_start_date",
+  { data_type => "date", is_nullable => 1 },
 );
 
 =head1 PRIMARY KEY
@@ -154,6 +161,20 @@ __PACKAGE__->add_columns(
 =cut
 
 __PACKAGE__->set_primary_key("staff_id");
+
+=head1 UNIQUE CONSTRAINTS
+
+=head2 C<uk_username_staff>
+
+=over 4
+
+=item * L</username>
+
+=back
+
+=cut
+
+__PACKAGE__->add_unique_constraint("uk_username_staff", ["username"]);
 
 =head1 RELATIONS
 
@@ -243,8 +264,8 @@ Composing rels: L</staff_roles> -> role
 __PACKAGE__->many_to_many("roles", "staff_roles", "role");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-09-18 01:41:01
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iNulLv7Fc7RCbgUKSEkomg
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-09-21 16:45:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:bHd2TRk1DcZ7yeGKBnMK0g
 
 sub name {
   my $self = shift;

@@ -16,3 +16,17 @@ body {
   line-height: 40px;
   background-color: #f5f5f5;
 }
+
+.constraint_required legend:after,
+.constraint_required > label[for]:after,
+.constraint_required.select label,
+.constraint_required.select label:after
+{
+  content: '(*)';
+}
+
+fieldset.well > legend {
+  width:inherit;
+  padding:0 10px 10px 10px;
+  border-bottom:none;
+}
