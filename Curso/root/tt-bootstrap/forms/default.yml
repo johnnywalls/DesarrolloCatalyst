@@ -26,9 +26,11 @@ default_args:
     'Fieldset':
       add_attributes:
         class: "well"
-    'Text':
+    'Text|Textarea':
       constraints:
         - type: Printable
+      filters:
+        - type: TrimEdges
     'Field':
       layout:
         - label

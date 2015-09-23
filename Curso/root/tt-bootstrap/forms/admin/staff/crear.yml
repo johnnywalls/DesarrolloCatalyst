@@ -3,6 +3,7 @@ load_config_file:
   - default.yml
 method: post
 id: frm_staff
+render_processed_value: 1
 elements:
   - type: Fieldset
     legend: Datos básicos de Empleado
@@ -15,6 +16,8 @@ elements:
             label: Nombre
             name: first_name
             id: first_name
+            filters:
+              - type: UpperCase
             constraints:
               - type: Required
               - type: MaxLength
@@ -23,6 +26,8 @@ elements:
             label: Apellido
             name: last_name
             id: last_name
+            filters:
+              - type: UpperCase
             constraints:
               - type: Required
               - type: MaxLength
@@ -31,6 +36,8 @@ elements:
             label: Email
             name: email
             id: email
+            filters:
+              - LowerCase
             constraints:
               - type: Required
               - type: Length
@@ -58,21 +65,28 @@ elements:
               - type: DateTime
                 parser: 
                   strptime: '%Y-%m-%d'
-          - type: Text
+# El elemento de tipo Number funciona como uno tipo Text, con un filtro y un "deflator"
+# de tipo FormatNumber agregados automáticamente
+          - type: Number
             label: Salario base mensual
             name: monthly_base_salary
             id: monthly_base_salary
-            comment_xml: '<div class="help-block"><span class="glyphicon glyphicon-info-sign" aria-label="Nota"></span> Obligatorio para usuarios activos</div>'
+            comment_xml: '<div class="help-block"><span class="glyphicon glyphicon-info-sign" aria-label="Nota"></span> Obligatorio para usuarios activos. Use formato de números en español.</div>'
+            locale: es_ES.UTF-8
+            precision: 2
+            trailing_zeroes: 1
             constraints:
               - type: Required
                 when:
                   field: active
                   value: 1
-              - type: Number
               - type: Range
-                message: "El valor debe estar entre 500 y 2000"
+                message: "El valor debe estar entre 500,00 y 2.000,00"
                 min: 500
                 max: 2000
+                when:
+                  field: active
+                  value: 1
       - type: Block
         attributes:
           class: "col-sm-6"
@@ -90,6 +104,9 @@ elements:
             label: Nombre de usuario
             name: username
             id: username
+            filters:
+              - type: Whitespace
+              - type: LowerCase
             constraints:
               - type: Required
               - type: MaxLength
@@ -158,6 +175,8 @@ elements:
             label: Dirección (Línea 1)
             name: address
             id: address
+            filters:
+              - type: HTMLEscape
             constraints:
               - type: Required
               - type: MaxLength
@@ -168,6 +187,8 @@ elements:
             id: address2
             attributes:
               rows: 3
+            filters:
+              - type: HTMLScrubber
             constraints:
               - type: MaxLength
                 max: 50
@@ -181,6 +202,8 @@ elements:
             values:
               - Distrito 1
               - Distrito 2
+            filters:
+              - type: UpperCase
             constraints:
               - type: Required
               - type: MaxLength
@@ -204,14 +227,69 @@ elements:
             label: Código Postal
             name: postal_code
             id: postal_code
+            filters:
+              - type: NonNumeric
           - type: Text
             label: Teléfono
             name: phone
             id: phone
+            comment_xml: '<div class="help-block"><span class="glyphicon glyphicon-info-sign" aria-label="Nota"></span> Se aceptan números de 9 dígitos. El formato se aplica automáticamente.</div>'
+            filters:
+              - type: NonNumeric
+              - type: Regex
+                match: '^(\d{2})(\d{3})(\d{4})'
+                replace: '"($1)$2-$3"'
+                eval: 1
             constraints:
               - type: Required
               - type: Regex
-                regex: '^[5-9]\d{8}$'
+                regex: '^\([5-9]\d\)\d{3}\-\d{4}$'
+                message: "La numeración válida comienza en 5, 6, 7, 8 o 9, y consta de 9 dígitos en total"
+          - type: Multi
+            label: Teléfono 2 (Opcional)
+            name: phone2
+            id: phone2
+            render_processed_value: 0
+            elements:
+              - type: Text
+                name: area
+                attributes:
+                  style: "width:3em;display:inline;"
+                  maxlength: 2
+                  placeholder: "2 díg."
+                constraints:
+                  - type: Integer
+                  - type: Length
+                    min: 2
+                    max: 2
+              - type: Text
+                name: parte1
+                attributes:
+                  style: "width:4em;display:inline;"
+                  maxlength: 3
+                  placeholder: "3 díg."
+                constraints:
+                  - type: Integer
+                  - type: Length
+                    min: 3
+                    max: 3
+              - type: Text
+                name: parte2
+                attributes:
+                  style: "width:5em;display:inline;"
+                  maxlength: 4
+                  placeholder: "4 díg."
+                constraints:
+                  - type: Integer
+                  - type: Length
+                    min: 4
+                    max: 4
+            filters:
+              - type: CompoundSprintf
+                sprintf: '(%d)%d-%d'
+            constraints:
+              - type: Regex
+                regex: '^\([5-9]\d\)\d{3}\-\d{4}$'
                 message: "La numeración válida comienza en 5, 6, 7, 8 o 9, y consta de 9 dígitos en total"
   - type: Block
     attributes:
