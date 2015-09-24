@@ -16,6 +16,11 @@
       <col>
       <col>
       <col>
+      <col>
+      <col>
+      <col>
+      <col>
+      <col>
     </colgroup>
     <thead>
       <tr>
@@ -23,6 +28,7 @@
         <th scope="col">Apellido</th>
         <th scope="col">Nombre</th>
         <th scope="col">Email</th>
+        <th scope="col">Foto</th>
         <th scope="col">Tienda</th>
         <th scope="col">Rol</th>
         <th scope="col">Activo</th>
@@ -40,6 +46,14 @@
         <td>[% fila.last_name %]</td>
         <td>[% fila.first_name %]</td>
         <td>[% fila.email %]</td>
+        <td>
+          [%- IF fila.has_picture %]
+          <img class="center-block img-responsive img-circle" src="[% Catalyst.uri_for('/admin/staff/' _ fila.id _ '/foto' ) %]"
+               style="max-width:64px;" alt="Foto actual" title="Foto actual">
+          [%- ELSE %]
+          N/D
+          [%- END %]
+        </td>
         <td>[% fila.assigned_store.name %]</td>
         <td>[% fila.rolenames %]</td>
         <td>[% fila.active ? 'Sí' : 'No' %]</td>

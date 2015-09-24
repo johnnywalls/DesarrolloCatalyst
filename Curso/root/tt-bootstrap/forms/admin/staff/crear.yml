@@ -152,8 +152,10 @@ elements:
                 message: "Las contraseñas deben coincidir"
           - type: File
             label: Foto
-            name: picture
-            id: picture
+            name: picture_file
+            id: picture_file
+            model_config:
+              read_only: 1
             constraints:
               - type: "File::MIME"
                 message: "Sólo se permiten imágenes JPEG, PNG o GIF."

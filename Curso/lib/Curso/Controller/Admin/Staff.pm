@@ -4,6 +4,7 @@ use utf8;
 use Try::Tiny;
 use MooseX::MethodAttributes;
 use Types::Standard qw/Int/;
+use Image::Magick;
 
 BEGIN { extends 'Catalyst::Controller::HTML::FormFu'; }
 
@@ -66,8 +67,9 @@ sub crear : Local : Args(0) : FormConfig {
       $c->model('DVD')->txn_do( sub {
         # Crear usuario
         $staff = $form->model->create( {resultset => 'Staff'} );
+        $c->stash->{ staff } = $staff;
+        $c->forward('cargar_foto') if $c->request->upload('picture_file');
       });
-      # FALTA: carga de foto
       $c->response->redirect(
         $c->uri_for( '/admin/staff/' . $staff->id, 
                       { mid => $c->set_status_msg("Empleado registrado exitosamente") } )
@@ -150,6 +152,23 @@ sub editar : Chained('base') : Args(0) : FormConfig('admin/staff/crear') {
   # Modificamos también el comentario del campo
   $campo_password->comment_xml('<div class="help-block"><span class="glyphicon glyphicon-info-sign" aria-label="Nota"></span> Introduzca sólo si desea modificar la contraseña</div>');
 
+  # Agregaremos un espacio en el formulario para mostrar la foto actual del empleado (si la tiene cargada)
+  if ( $staff->has_picture ) {
+    # Primero, buscamos el campo para subir el archivo de foto, de modo de insertar la foto actual
+    # en esa posición
+    my $campo_foto = $form->get_field({ name => 'picture_file', type => 'File' });
+    # El siguiente 'element' crea un nuevo elemento, dentro del mismo contenedor (columna derecha)
+    # donde se encuentra el campo de foto originalmente. De manera predeterminada se crea al final
+    # pero luego lo coloaremos en la posición deseada
+    my $foto_actual = $campo_foto->parent->element({
+      type => 'Block',
+      content_xml => '<img class="center-block img-responsive img-circle" src="' . $c->uri_for('/admin/staff/' . $staff->id . '/foto') . '"
+                      alt="Foto actual" title="Foto actual">',
+    });
+    # Aquí movemos el elemento con la foto actual en la posición deseada
+    $campo_foto->parent->insert_after( $foto_actual, $campo_foto );
+  }
+
   # Siempre que realicemos modificaciones 'manuales' o dinámicas (es decir, vía código),
   # debemos invocar al método 'process' del formulario
   $form->process;
@@ -159,8 +178,8 @@ sub editar : Chained('base') : Args(0) : FormConfig('admin/staff/crear') {
       $c->model('DVD')->txn_do( sub {
         # Actualizar usuario
         $form->model->update( $staff );
+        $c->forward('cargar_foto') if $c->request->upload('picture_file');
       });
-      # FALTA: carga de foto
       $c->response->redirect(
         $c->uri_for( '/admin/staff/' . $staff->id, 
                       { mid => $c->set_status_msg("Empleado actualizado exitosamente") } )
@@ -175,6 +194,45 @@ sub editar : Chained('base') : Args(0) : FormConfig('admin/staff/crear') {
     $c->stash->{ error_msg } = Curso->config->{ mensaje_datos_invalidos };
   }
 
+}
+
+=head2 cargar_foto
+
+Se encarga de procesar la carga de una foto de empleado al crear / actualizar el registro.
+Procesa convirtiendo a un formato específico (JPG), y un tamaño estándar predefinido,
+redimensionando y/o recortando la imagen.  Al finalizar, se almacena el contenido binario
+dentro del mismo registro de base de datos correspondiente al empleado
+
+=cut
+
+sub cargar_foto : Private {
+  my ( $self, $c ) = @_;
+  my $staff = $c->stash->{ staff };
+
+  my $upload = $c->request->upload( 'picture_file' );
+  if ( $upload && $staff ) {
+    my $imagen = Image::Magick->new;
+    $imagen->read( $upload->tempname );
+    $imagen->Scale( width => 240 );
+    $imagen->Crop( Gravity => 'North', width => 240, height => 240 );
+    $staff->update( { picture => $imagen->ImageToBlob(), has_picture => 1 } );
+  }
+}
+
+=head2 foto
+
+Muestra la foto del empleado, si está disponible
+
+=cut
+
+sub foto : Chained('base') : Args(0) {
+  my ( $self, $c ) = @_;
+
+  my $staff = $c->stash->{ staff };
+  if ( $staff->has_picture ) {
+    $c->response->content_type('image/jpeg');
+    $c->response->body( $staff->picture );
+  }
 }
 
 =encoding utf8

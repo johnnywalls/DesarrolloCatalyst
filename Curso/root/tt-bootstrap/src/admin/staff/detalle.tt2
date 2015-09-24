@@ -58,9 +58,12 @@
           </dl>
         </div>
         <div class="col-sm-4">
-          <a href="#" class="thumbnail">
-            <img src="http://placehold.it/240x240" alt="Foto">
-          </a>
+          [%- IF staff.has_picture %]
+          <img class="center-block img-responsive img-circle" src="[% Catalyst.uri_for('/admin/staff/' _ staff.id _ '/foto' ) %]"
+                alt="Foto actual" title="Foto actual">
+          [%- ELSE %]
+          <img class="center-block img-responsive img-circle" src="http://placehold.it/240x240?text=Foto+No+Disponible" alt="Foto No Disponible">
+          [%- END %]
         </div>
       </div>
     </div>

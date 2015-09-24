@@ -116,6 +116,12 @@ __PACKAGE__->table("staff");
   data_type: 'numeric'
   is_nullable: 1
 
+=head2 has_picture
+
+  data_type: 'boolean'
+  default_value: false
+  is_nullable: 0
+
 =cut
 
 __PACKAGE__->add_columns(
@@ -155,6 +161,8 @@ __PACKAGE__->add_columns(
   { data_type => "date", is_nullable => 1 },
   "monthly_base_salary",
   { data_type => "numeric", is_nullable => 1 },
+  "has_picture",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 
 =head1 PRIMARY KEY
@@ -271,8 +279,8 @@ Composing rels: L</staff_roles> -> role
 __PACKAGE__->many_to_many("roles", "staff_roles", "role");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-09-22 13:15:04
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wluH9ale+7uIhHHF0bccnw
+# Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-09-24 14:14:44
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Tg8o1twFdwFXaAKIeoqCMQ
 
 __PACKAGE__->belongs_to(
   "assigned_store",
