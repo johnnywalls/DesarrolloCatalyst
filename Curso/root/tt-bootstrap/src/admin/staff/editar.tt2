@@ -1,0 +1,18 @@
+<div class="container">
+  <ol class="breadcrumb">
+    <li><a href="[% Catalyst.uri_for('/admin/staff') %]">Administrar Empleados</a></li>
+    <li><a href="[% Catalyst.uri_for('/admin/staff/' _ staff.id) %]">[% staff.username %]</a></li>
+    <li class="active">Editar</li>
+  </ol>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h2>Editar registro de empleado</h2>
+    </div>
+    <div class="panel-body">
+      [% form %]
+    </div>
+  </div>
+
+</div> 
+ 

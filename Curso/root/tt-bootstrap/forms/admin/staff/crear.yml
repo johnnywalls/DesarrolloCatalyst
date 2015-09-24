@@ -97,9 +97,16 @@ elements:
             id: store_id
             empty_first: 1
             empty_first_label: '--Seleccione--'
-            options:
-              - [ '1', 'Tienda 1' ]
-              - [ '2', 'Tienda 2' ]
+# Nótese que en label_column puede especificarse una columna de la clase/tabla (ResultSet),
+# o, como en este caso, un método personalizado en dicha clase del modelo
+            model_config:
+              resultset: Store
+              id_column: store_id
+              label_column: name
+              attributes:
+                order_by: store_id
+            constraints:
+              - type: Required
           - type: Text
             label: Nombre de usuario
             name: username
@@ -111,11 +118,21 @@ elements:
               - type: Required
               - type: MaxLength
                 max: 16
+# Podemos agregar un Constraint para validar la unicidad en la BD de un campo.
+# En nuestro caso, agregamos esta restricción en el formulario para ilustración,
+# aunque igualmente dicha validación se aplica directamente en la BD
+              - type: DBIC::Unique
+                resultset: Staff
+                column: username
+                self_stash_key: staff
+                message: "El nombre de usuario dado ya está registrado"
           - type: Password
             label: Contraseña
             name: password
             id: password
             comment_xml: '<div class="help-block"><span class="glyphicon glyphicon-info-sign" aria-label="Nota"></span> Obligatorio para usuarios activos</div>'
+            model_config:
+              ignore_if_empty: 1
             constraints:
               - type: Required
                 message: "Debe introducir una contraseña si el usuario está activo"
@@ -147,17 +164,20 @@ elements:
               - type: "File::MaxSize"
                 max: 2097152
                 message: "El tamaño de la imagen no debe superar los 2 Mb."
+# Ya que entre Staff y Role hay una relación "muchos a muchos", colocamos el nombre del
+# campo Checkboxgroup con el mismo nombre de dicha relación
           - type: Checkboxgroup
             label: Roles
-            name: role_id
-            id: role_id
+            name: roles
+            id: roles
             auto_id: "%n_%c"
             comment_xml: '<div class="help-block"><span class="glyphicon glyphicon-info-sign" aria-label="Nota"></span> Obligatorio para usuarios activos</div>'
-            options:
-              - [ '1', 'Administrador' ]
-              - [ '2', 'Ventas' ]
-              - [ '3', 'Soporte' ]
-              - [ '4', 'Consulta' ]
+            model_config:
+              resultset: Role
+              id_column: role_id
+              label_column: name
+              attributes:
+                order_by: role_id
             constraints:
               - type: Required
                 message: "Seleccione al menos una opción"
@@ -166,6 +186,8 @@ elements:
                   value: 1
   - type: Fieldset
     legend: Datos de Dirección
+    name: address
+    nested_name: address
     elements:
       - type: Block
         attributes:
@@ -199,9 +221,24 @@ elements:
             comment_xml: '<div class="help-block"><span class="glyphicon glyphicon-info-sign" aria-label="Nota"></span> Seleccione en la lista o escriba en el campo de texto</div>'
             name: district
             id: district
-            values:
-              - Distrito 1
-              - Distrito 2
+# En el caso del Distrito, no tenemos una Clase/Tabla dedicada, sino que se trata de una columna
+# dentro de Address. Aquí ilustramos cómo cargar la lista de distritos existentes en el ComboBox
+# obteniendo sólo los registros únicos (y no vacíos), convertidos a mayúsculas. Nótese el uso
+# de "condition" para especificar el "WHERE" y otras opciones en "attributes" para lograr
+# la consulta tipo distinct/group by
+            model_config:
+              resultset: Address
+              id_column: district
+              label_column: district
+              condition:
+                district:
+                  '!=': ''
+              attributes:
+                select:
+                  UPPER: district
+                as: 'district'
+                group_by: 'UPPER(district)'
+                order_by: 'UPPER(district)'
             filters:
               - type: UpperCase
             constraints:
@@ -218,9 +255,16 @@ elements:
             id: city_id
             empty_first: 1
             empty_first_label: '--Seleccione--'
-            options:
-              - [ '1', 'Ciudad 1' ]
-              - [ '2', 'Ciudad 2' ]
+# Para la lista de Ciudad, ilustramos el uso de una columna 'virtual' (método en la clase
+# ResultSet), que concatena la ciudad con el país al que pertenece. Se usa "prefetch" para
+# obtener en una sola consulta el JOIN de ciudad y país
+            model_config:
+              resultset: City
+              id_column: city_id
+              label_column: city_with_country
+              attributes:
+                order_by: 'me.country_id, city_id'
+                prefetch: 'country'
             constraints:
               - type: Required
           - type: Text
@@ -242,52 +286,6 @@ elements:
                 eval: 1
             constraints:
               - type: Required
-              - type: Regex
-                regex: '^\([5-9]\d\)\d{3}\-\d{4}$'
-                message: "La numeración válida comienza en 5, 6, 7, 8 o 9, y consta de 9 dígitos en total"
-          - type: Multi
-            label: Teléfono 2 (Opcional)
-            name: phone2
-            id: phone2
-            render_processed_value: 0
-            elements:
-              - type: Text
-                name: area
-                attributes:
-                  style: "width:3em;display:inline;"
-                  maxlength: 2
-                  placeholder: "2 díg."
-                constraints:
-                  - type: Integer
-                  - type: Length
-                    min: 2
-                    max: 2
-              - type: Text
-                name: parte1
-                attributes:
-                  style: "width:4em;display:inline;"
-                  maxlength: 3
-                  placeholder: "3 díg."
-                constraints:
-                  - type: Integer
-                  - type: Length
-                    min: 3
-                    max: 3
-              - type: Text
-                name: parte2
-                attributes:
-                  style: "width:5em;display:inline;"
-                  maxlength: 4
-                  placeholder: "4 díg."
-                constraints:
-                  - type: Integer
-                  - type: Length
-                    min: 4
-                    max: 4
-            filters:
-              - type: CompoundSprintf
-                sprintf: '(%d)%d-%d'
-            constraints:
               - type: Regex
                 regex: '^\([5-9]\d\)\d{3}\-\d{4}$'
                 message: "La numeración válida comienza en 5, 6, 7, 8 o 9, y consta de 9 dígitos en total"

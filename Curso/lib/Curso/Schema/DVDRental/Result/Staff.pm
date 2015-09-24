@@ -274,10 +274,34 @@ __PACKAGE__->many_to_many("roles", "staff_roles", "role");
 # Created by DBIx::Class::Schema::Loader v0.07043 @ 2015-09-22 13:15:04
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wluH9ale+7uIhHHF0bccnw
 
+__PACKAGE__->belongs_to(
+  "assigned_store",
+  "Curso::Schema::DVDRental::Result::Store",
+  { "foreign.store_id" => "self.store_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 sub name {
   my $self = shift;
   return $self->first_name . ' ' . $self->last_name;
 }
+
+sub rolenames {
+  my $self = shift;
+  return join( ', ', $self->roles->get_column('name')->all );
+}
+
+# Agregar cifrado automático para campo de contraseña
+__PACKAGE__->load_components( "EncodedColumn", "InflateColumn::DateTime", "TimeStamp" );
+__PACKAGE__->add_columns(
+  'password' => {
+    data_type     => 'varchar',
+    is_nullable   => 1,
+    size          => 40,
+    encode_column => 1,
+    encode_class  => 'Digest',
+    encode_args   => {algorithm => 'SHA-1', format => 'hex'},
+});
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;

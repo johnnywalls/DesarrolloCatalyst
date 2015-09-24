@@ -17,6 +17,35 @@ requires 'Moose';
 requires 'namespace::autoclean';
 requires 'Config::General'; # This should reflect the config file format you've chosen
                  # See Catalyst::Plugin::ConfigLoader for supported formats
+
+requires 'Catalyst::View::TT';
+requires 'Catalyst::Helper::View::Bootstrap';
+requires 'Image::Info';
+requires 'MooseX::MethodAttributes';
+requires 'Types::Standard';
+requires 'Catalyst::Model::DBIC::Schema';
+requires 'DBIx::Class::TimeStamp';
+requires 'DBIx::Class::ResultClass::HashRefInflator';
+requires 'Catalyst::Plugin::Authentication';
+requires 'Catalyst::Plugin::Authorization::Roles';
+requires 'Catalyst::Plugin::Session::Store::File';
+requires 'Catalyst::Plugin::Session::State::Cookie';
+requires 'Catalyst::Authentication::Store::Minimal';
+requires 'Catalyst::Authentication::Credential::Password';
+requires 'Catalyst::Authentication::Store::DBIx::Class';
+requires 'Digest::SHA1';
+requires 'Catalyst::Plugin::Authorization::Roles';
+requires 'Catalyst::ActionRole::ACL';
+requires 'Log::Log4perl';
+requires 'Catalyst::Plugin::StackTrace';
+requires 'Catalyst::Plugin::CustomErrorMessage';
+requires 'Catalyst::Controller::HTML::FormFu';
+requires 'Number::Format';
+requires 'HTML::Scrubber';
+requires 'HTML::FormFu::Model::DBIC';
+requires 'DBIx::Class::EncodedColumn';
+requires 'Template::Plugin::Number::Format';
+
 test_requires 'Test::More' => '0.88';
 catalyst;
 
