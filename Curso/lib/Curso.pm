@@ -27,6 +27,7 @@ use Catalyst qw/
     Authorization::Roles
     StackTrace
     CustomErrorMessage
+    RapidApp::RapidDbic
 /;
 
 extends 'Catalyst';

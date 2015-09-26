@@ -36,9 +36,6 @@ sub index :Path :Args(0) {
 
   $c->log->debug("Acción index en controlador Root");
   $c->stash->{ template } = 'welcome.tt2';
-  use Data::Dumper;
-  $c->log->debug( "Menú Principal: " . Dumper( $c->config->{ menu_principal } ) );
-  $c->log->debug( "Configuración activa: " . Dumper($c->config) );
   $c->session->{ inicio }++;
   # demostrar diferentes niveles de mensajes para bitácora
   $c->log->info( "La página de inicio ha sido visitada " . $c->session->{ inicio } . " veces en esta sesión" );
@@ -91,7 +88,19 @@ sub auto :Private {
   return 1 if ($c->req->path eq 'login' || $c->req->path eq '' );
 
   if ( $c->user_exists ) {
-    return 1;
+    # Podemos limitar el acceso a RapidApp desde la propia aplicación
+    if ( $c->req->path eq 'admin-ra' ) {
+      if ( $c->check_any_user_role( qw/Administrator/ ) ) {
+        return 1;
+      }
+      else {
+        $c->detach('/acceso_denegado');
+        return 0;
+      }
+    }
+    else {
+      return 1;
+    }
   }
   else {
     # En caso de requerir inicio de sesión, iremos a la página de inicio
