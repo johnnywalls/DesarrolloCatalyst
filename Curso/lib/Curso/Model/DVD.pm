@@ -2,6 +2,7 @@ package Curso::Model::DVD;
 
 use strict;
 use base 'Catalyst::Model::DBIC::Schema';
+use utf8;
 
 __PACKAGE__->config(
     schema_class => 'Curso::Schema::DVDRental',
@@ -12,6 +13,110 @@ __PACKAGE__->config(
         password => 'curso',
         pg_enable_utf8  => q{ 1},
     }
+);
+__PACKAGE__->config(
+  RapidDbic => {
+    # Aquí podemos excluir los ResultSource correspondientes a Vistas de BD, entre otros
+    exclude_sources => [ 'ActorInfo', 'CustomerList', 'FilmList', 'NicerButSlowerFilmList',
+                         'ReporteInventarioCategoria', 'ReportePagosMensuales',
+                         'SaleByFilmCategory', 'SaleByStore', 'StaffList' ],
+    grid_params => {
+      # Todas las columnas editables, de manera predeterminada
+      '*defaults' => {
+          updatable_colspec   => [ '*' ],
+          creatable_colspec   => [ '*' ],
+          destroyable_relspec => [ '*' ],
+      },
+      Category => {
+        use_add_form          => 0,
+        confirm_on_destroy    => 0, # sin confirmación para eliminar
+      },
+    },
+    TableSpecs => {
+      Language => {
+        display_column        => 'name',
+        title                 => 'Idioma',
+        title_multi           => 'Idiomas',
+        auto_editor_type      => 'combo', # En lugar de usar grid, usamos una lista simple
+        columns => {
+          # La fecha de última actualización se llena automáticamente, por lo que no
+          # queremos que sea editable
+          last_update => {
+            allow_edit => 0,
+            allow_add => 0,
+            profiles => [ 'datetime' ],
+          },
+        },
+      },
+      Category => {
+        display_column        => 'name',
+        title                 => 'Categoría',
+        title_multi           => 'Categorías',
+      },
+      Film => {
+        display_column        => 'title',
+        title                 => 'Película',
+        title_multi           => 'Películas',
+        columns => {
+          last_update => {
+            allow_edit => 0,
+            allow_add => 0,
+            profiles => [ 'datetime' ],
+          },
+          # Ocultamos la columna del ID de idioma, ya que podemos ver/actualizar esta
+          # información a través de su relación
+          language_id => {
+            no_column => 1,
+          },
+          fulltext => {
+            no_column => 1,
+          },
+          # Podemos personalizar el encabezado de la columna 'language' (aunque no es una
+          # columna de BD, sino el nombre de la relación, sí es una columna del grid)
+          language => {
+            header => 'idioma',
+          },
+          # Si queremos agregar, por ejemplo, un editor HTML a la descripción:
+          description => {
+            profiles => [ 'html' ],
+          }
+        },
+      },
+      Staff => {
+        display_column => 'username',
+        title => 'Empleado',
+        title_multi => 'Empleados',
+        columns => {
+          last_update => {
+            allow_edit => 0,
+            allow_add => 0,
+            profiles => [ 'datetime' ],
+          },
+          password => {
+            no_column => 1,
+          },
+          # Ocultamos la foto de la vista grid, pero podemos utilizarla en la vista detalle,
+          # asociando además el perfil adecuado para visualizarla
+          picture => {
+            hidden => 1,
+            allow_add => 0,
+            allow_edit => 0,
+            allow_view => 1,
+            width => 240,
+            profiles => ['img_blob'],
+          },
+          email => {
+            profiles => ['email'],
+          }
+        },
+      },
+      Role => {
+        display_column => 'name',
+        title => 'Rol',
+        title_multi => 'Roles',
+      }
+    }, # fin TableSpecs
+  }
 );
 
 =head1 NAME
