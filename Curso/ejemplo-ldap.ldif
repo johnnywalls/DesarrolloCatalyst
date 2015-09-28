@@ -1,0 +1,96 @@
+## Usuario para consultar directorio
+dn: cn=consulta,dc=nodomain
+objectClass: simpleSecurityObject
+objectClass: organizationalRole
+cn: consulta
+description: Usuario LDAP
+userPassword: curso
+
+## Jerarquia de primer nivel - people 
+
+dn: ou=people, dc=nodomain
+ou: people
+description: All people in organisation
+objectclass: organizationalunit
+
+## Segundo nivel (usuarios dentro de 'people')
+
+dn: cn=Súper Sónico,ou=people,dc=nodomain
+objectclass: inetOrgPerson
+cn: Súper Sónico
+givenname: Súper
+sn: Sónico
+uid: super
+userpassword: 12345
+mail: super@example.com
+
+dn: cn=Pedro Picapiedra,ou=people,dc=nodomain
+objectclass: inetOrgPerson
+cn: Pedro Picapiedra
+givenname: Pedro
+sn: Picapiedra
+uid: pedro
+userpassword: 12345
+mail: pedro@example.com
+
+dn: cn=Dino Picapiedra,ou=people,dc=nodomain
+objectclass: inetOrgPerson
+cn: Dino Picapiedra
+givenname: Dino
+sn: Picapiedra
+uid: dino
+userpassword: 12345
+mail: dino@example.com
+
+dn: cn=Pablo Mármol,ou=people,dc=nodomain
+objectclass: inetOrgPerson
+cn: Pablo Mármol
+givenname: Pablo
+sn: Mármol
+uid: pablo
+userpassword: 12345
+mail: pablo@example.com
+
+dn: cn=Pepe Trueno,ou=people,dc=nodomain
+objectclass: inetOrgPerson
+cn: Pepe Trueno
+givenname: Pepe
+sn: Trueno
+uid: pepe
+userpassword: 12345
+mail: pepe@example.com
+
+## Jerarquia de primer nivel - groups 
+
+dn: ou=groups,dc=nodomain
+objectclass:organizationalunit
+ou: groups
+description: Rama para grupos
+
+## Crear varios grupos con sus miembros
+
+dn: cn=Administrator,ou=groups,dc=nodomain
+objectclass: groupofnames
+cn: Administrator
+description: Grupo de administradores
+member: cn=Súper Sónico,ou=people,dc=nodomain
+
+dn: cn=Sales,ou=groups,dc=nodomain
+objectclass: groupofnames
+cn: Sales
+description: Grupo de ventas
+member: cn=Pedro Picapiedra,ou=people,dc=nodomain
+member: cn=Dino Picapiedra,ou=people,dc=nodomain
+
+dn: cn=Helpdesk,ou=groups,dc=nodomain
+objectclass: groupofnames
+cn: Helpdesk
+description: Grupo de Soporte Técnico
+member: cn=Pedro Picapiedra,ou=people,dc=nodomain
+member: cn=Súper Sónico,ou=people,dc=nodomain
+
+dn: cn=Readonly,ou=groups,dc=nodomain
+objectclass: groupofnames
+cn: Readonly
+description: Grupo de Consulta
+member: cn=Pepe Trueno,ou=people,dc=nodomain

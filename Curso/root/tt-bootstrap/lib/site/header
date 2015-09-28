@@ -34,7 +34,7 @@
       </ul>
       [%- IF Catalyst.user_exists %]
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>Hola, [% Catalyst.user.name %]</a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>Hola, [% Catalyst.user.cn %]</a></li>
         <li><a href="[% Catalyst.uri_for('/logout') %]"><span class="glyphicon glyphicon-off" aria-hidden="true"></span> Salir</a></li>
       </ul>
       [%- ELSE %]

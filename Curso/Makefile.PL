@@ -46,6 +46,7 @@ requires 'HTML::FormFu::Model::DBIC';
 requires 'DBIx::Class::EncodedColumn';
 requires 'Template::Plugin::Number::Format';
 requires 'Catalyst::Plugin::RapidApp::Dbic';
+requires 'Catalyst::Authentication::Store::LDAP';
 
 test_requires 'Test::More' => '0.88';
 catalyst;

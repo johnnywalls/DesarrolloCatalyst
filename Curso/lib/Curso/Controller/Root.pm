@@ -160,7 +160,7 @@ sub login : Local {
   if ( $usuario && $usuario ) {
     if ( $c->authenticate({ username => $usuario, password => $password, active => 1 } ) ) {
       $c->log->debug( "Usuario autenticado con roles: " . join( ',', $c->user->roles ) );
-      $destino->query_param_append( 'mid', $c->set_status_msg('¡Bienvenido(a), ' . $c->user->name . '!' ) );
+      $destino->query_param_append( 'mid', $c->set_status_msg('¡Bienvenido(a), ' . $c->user->cn . '!' ) );
       $c->response->redirect($destino->as_string);
     }
     else {
