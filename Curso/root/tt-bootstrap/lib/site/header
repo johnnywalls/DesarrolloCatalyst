@@ -34,9 +34,18 @@
       </ul>
       [%- IF Catalyst.user_exists %]
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>Hola, [% Catalyst.user.cn %]</a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span>Hola, [% Catalyst.user.name %]</a></li>
         <li><a href="[% Catalyst.uri_for('/logout') %]"><span class="glyphicon glyphicon-off" aria-hidden="true"></span> Salir</a></li>
       </ul>
+      <form class="navbar-form navbar-right" role="form" action="[% Catalyst.uri_for('/buscar') %]" method="get">
+        <div class="form-group">
+          <div class="input-group">
+            <span class="input-group-addon"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></span>
+            <input type="text" placeholder="Búsqueda en la web..." name="busqueda" class="form-control">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Buscar</button>
+      </form>
       [%- ELSE %]
       <form class="navbar-form navbar-right" role="form" action="[% Catalyst.uri_for('/login') %]" method="post">
         <div class="form-group">

@@ -1,0 +1,42 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>Resultados de búsqueda</h1>
+    <p>Término: <strong>[% Catalyst.request.params.busqueda | html %]</strong></p>
+  </div>
+</div>
+
+<div class="container">
+  [%- IF wikipedia %]
+  <div class="media">
+    <div class="media-left media-top">
+      <i class="media-object fa fa-wikipedia-w" aria-label="Wikipedia"></i>
+    </div>
+    <div class="media-body">
+      <h4 class="media-heading">
+        <a href="http://es.wikipedia.org/wiki/[% wikipedia.title %]" target="_blank">
+        [% unescape( wikipedia.title ) %]</a>
+      </h4>
+      [% unescape( wikipedia.text ) %]
+    </div>
+  </div>
+  [%- END %]
+
+  [%- IF google %]
+    [%- FOREACH g IN google %]
+    <div class="media">
+      <div class="media-left media-top">
+        <i class="media-object fa fa-google" aria-label="Google"></i>
+      </div>
+      <div class="media-body">
+        <h4 class="media-heading">
+          <a href="[% g.url %]" target="_blank">[% g.titleNoFormatting %]</a>
+        </h4>
+        [% g.content %]
+      </div>
+    </div>
+    [%- END %]
+  [%- END %]
+
+</div>

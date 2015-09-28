@@ -13,6 +13,7 @@ __PACKAGE__->config({
     ERROR        => 'error.tt2',
     TIMER        => 0,
     render_die   => 1,
+    expose_methods => [ qw/ unescape / ]
 });
 
 =head1 NAME
@@ -26,6 +27,20 @@ See L<Curso>
 =head1 DESCRIPTION
 
 Catalyst TTSite View.
+
+=head2 unescape
+
+Remover los caracteres de escape con URI::Escape
+
+=cut
+
+sub unescape {
+  my ($self, $c, $cadena) = @_;
+  use URI::Escape;
+
+  return uri_unescape( $cadena ) if $cadena;
+  return undef;
+}
 
 =head1 AUTHOR
 

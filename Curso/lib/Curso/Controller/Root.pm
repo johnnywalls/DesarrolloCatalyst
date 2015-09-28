@@ -160,7 +160,7 @@ sub login : Local {
   if ( $usuario && $usuario ) {
     if ( $c->authenticate({ username => $usuario, password => $password, active => 1 } ) ) {
       $c->log->debug( "Usuario autenticado con roles: " . join( ',', $c->user->roles ) );
-      $destino->query_param_append( 'mid', $c->set_status_msg('¡Bienvenido(a), ' . $c->user->cn . '!' ) );
+      $destino->query_param_append( 'mid', $c->set_status_msg('¡Bienvenido(a), ' . $c->user->name . '!' ) );
       $c->response->redirect($destino->as_string);
     }
     else {
@@ -199,6 +199,26 @@ sub acceso_denegado : Private {
   $c->stash->{ error_msg } = 'Privilegios insuficientes';
   $c->stash->{ template } = 'acceso_denegado.tt2';
   return 0;
+}
+
+
+=head2 buscar
+
+Demostración de búsquedas con modelos externos
+
+=cut
+
+sub buscar : Local : Args(0) {
+  my ( $self, $c ) = @_;
+  $c->stash->{ template } = 'resultados_busqueda.tt2';
+  my $busqueda = $c->request->params->{ busqueda };
+  if ( $busqueda ) {
+    $c->stash->{ wikipedia } = $c->model('Wikipedia')->search( $busqueda );
+    $c->stash->{ google } = [ $c->model('Google')->search( $busqueda )->responseData->results ];
+  }
+  else {
+    $c->response->redirect( $c->uri_for( '/', { mid => $c->set_status_msg('Debe especificar un texto de búsqueda' ) } ) );
+  }
 }
 
 =head1 AUTHOR

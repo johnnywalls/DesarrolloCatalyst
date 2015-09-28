@@ -14,6 +14,7 @@ __PACKAGE__->config(
         pg_enable_utf8  => q{ 1},
     }
 );
+
 __PACKAGE__->config(
   RapidDbic => {
     # Aquí podemos excluir los ResultSource correspondientes a Vistas de BD, entre otros
@@ -118,6 +119,7 @@ __PACKAGE__->config(
     }, # fin TableSpecs
   }
 );
+
 
 =head1 NAME
 

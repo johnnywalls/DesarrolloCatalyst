@@ -47,6 +47,9 @@ requires 'DBIx::Class::EncodedColumn';
 requires 'Template::Plugin::Number::Format';
 requires 'Catalyst::Plugin::RapidApp::Dbic';
 requires 'Catalyst::Authentication::Store::LDAP';
+requires 'Catalyst::Model::Adaptor';
+requires 'WWW::Wikipedia';
+requires 'REST::Google::Search';
 
 test_requires 'Test::More' => '0.88';
 catalyst;
