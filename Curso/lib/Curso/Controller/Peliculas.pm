@@ -85,7 +85,7 @@ sub incorporacion_reciente : Path('recientes') {
 
   # Buscar películas recientes en el modelo y pasar a la vista a través del stash
   my $resultados = $c->model('DVD::Film')->search( {}, {
-    order_by => 'release_year DESC, film_id DESC',
+    order_by => { -desc => [qw/release_year film_id/] },
     rows => 10,
   });
   $c->stash->{ peliculas } = [ $resultados->all ];

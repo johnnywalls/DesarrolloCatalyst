@@ -301,7 +301,7 @@ sub recent_rentals {
   return $schema->resultset('Rental')->search( $filters, {
     join => [ 'inventory', 'customer' ],
     rows => $limit,
-    order_by => 'rental_date DESC',
+    order_by => { '-desc' => 'rental_date' },
   });
 }
 
